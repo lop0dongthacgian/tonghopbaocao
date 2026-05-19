@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tổng Hợp Báo Cáo Công Tác Hội</title>
+<meta name="theme-color" content="#a8edea">
+<meta name="apple-mobile-web-app-title" content="Tổng Hợp Báo Cáo Công Tác Hội">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<script src="pwa-core.js"></script>
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --navy:    #1e3a8a;
+  --navy2:   #1e40af;
+  --blue:    #2563eb;
+  --blue-lt: #eff6ff;
+  --blue-bd: #bfdbfe;
+  --green:   #16a34a;
+  --green-lt:#f0fdf4;
+  --red:     #dc2626;
+  --red-lt:  #fef2f2;
+  --amber:   #d97706;
+  --amber-lt:#fffbeb;
+  --purple:  #7c3aed;
+  --purple-lt:#f5f3ff;
+  --text:    #0f172a;
+  --muted:   #64748b;
+  --border:  #e2e8f0;
+  --bg:      #f8fafc;
+  --white:   #ffffff;
+  --shadow:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.65;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%,   rgba(37,99,235,0.10) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 100%,  rgba(30,58,138,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 10% 80%,   rgba(37,99,235,0.07) 0%, transparent 60%),
+    var(--bg);
+  pointer-events: none;
+}
+.bg-pattern {
+  position: fixed; inset: 0; z-index: 0; opacity: 0.095;
+  background-image:
+    repeating-linear-gradient(45deg,  #1e3a8a 0, #1e3a8a 1.2px, transparent 0, transparent 50%),
+    repeating-linear-gradient(-45deg, #1e3a8a 0, #1e3a8a 1.2px, transparent 0, transparent 50%);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+/* ── HEADER ── */
+header {
+  background: none; color: #fff;
+  padding: 0rem 2rem 1.25rem;
+  text-align: center;
+  border-top: 3px solid var(--blue);
+  border-bottom: 3px solid var(--blue);
+  position: relative; z-index: 1;
+}
+header h1 { font-size: 1.8rem; line-height: 1.2; padding-top: 0.5rem; font-weight: 700; letter-spacing: .3px; text-shadow: 1px 1px 1px rgba(0,0,255,1), 0.5px 0.5px 2px rgba(255,255,255,1), 2px 2px 4px rgba(0,0,0,0.9); }
+header p  { color: #0000FF; font-size: 1rem; opacity: .8; margin-top: .3rem; text-shadow: 0.3px 0.3px 1px rgba(255,255,255,1), 1px 1px 1px rgba(0,0,0,0.9); }
+
+/* ── LAYOUT ── */
+.wrap {
+  max-width: 1100px; margin: 1.75rem auto;
+  padding: 0 1.25rem; flex: 1;
+  display: flex; flex-direction: column; gap: 1.5rem;
+  width: 100%; position: relative; z-index: 1;
+}
+
+/* ── CARD ── */
+.card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+.card-header { padding: .85rem 1.4rem; border-bottom: 1px solid var(--border); background: #fafcff; display: flex; align-items: center; justify-content: center; gap: .6rem; }
+.card-header .icon { font-size: 1rem; }
+.card-header h2 { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.1px; color: var(--muted); }
+.card-body { padding: 1.4rem; }
+
+/* ── TAB SOURCE SELECTOR ── */
+.source-tabs {
+  display: flex; gap: .5rem; margin-bottom: 1.2rem;
+  border-bottom: 2px solid var(--border); padding-bottom: 0;
+}
+.tab-btn {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .55rem 1.1rem; border: none; background: none;
+  font-family: inherit; font-size: .82rem; font-weight: 600;
+  color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent;
+  margin-bottom: -2px; border-radius: 6px 6px 0 0; transition: all .2s;
+}
+.tab-btn:hover { color: var(--blue); background: var(--blue-lt); }
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); background: var(--blue-lt); }
+.tab-btn.drive-tab.active { color: var(--purple); border-bottom-color: var(--purple); background: var(--purple-lt); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── DROPZONE ── */
+.drop-zone {
+  border: 2px dashed var(--border); border-radius: 10px;
+  padding: 2.5rem 1.5rem; text-align: center;
+  cursor: pointer; transition: all .2s; background: var(--bg);
+}
+.drop-zone:hover, .drop-zone.over { border-color: var(--blue); background: var(--blue-lt); }
+.drop-zone .dz-icon { font-size: 2.4rem; display: block; margin-bottom: .7rem; }
+.drop-zone h3 { font-size: .95rem; font-weight: 600; margin-bottom: .35rem; }
+.drop-zone small { color: var(--muted); font-size: .8rem; }
+.fmt-pill { display: inline-block; background: var(--navy); color: #fff; font-size: .65rem; font-weight: 700; padding: .15rem .55rem; border-radius: 20px; margin-top: .55rem; }
+input[type="file"] { display: none; }
+
+/* ── FOLDER SELECT BTN ── */
+.folder-actions {
+  display: flex;
+  gap: .7rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.folder-actions .btn-folder {
+  min-width: 220px;
+  justify-content: center;
+}
+.btn-folder {
+  display: inline-flex; align-items: center; gap: .45rem;
+  background: var(--blue-lt); border: 1.5px dashed var(--blue);
+  color: var(--blue); font-size: .85rem; font-weight: 600;
+  padding: .65rem 1.3rem; border-radius: 8px; cursor: pointer;
+  font-family: inherit; transition: all .2s;
+}
+.btn-folder:hover { background: var(--blue); color: #fff; border-style: solid; }
+.btn-folder-purple {
+  background: var(--purple-lt); border-color: var(--purple); color: var(--purple);
+}
+.btn-folder-purple:hover { background: var(--purple); color: #fff; }
+
+/* ── DRIVE PANEL ── */
+.drive-panel { padding: 1rem; background: var(--purple-lt); border-radius: 10px; border: 1px solid #ddd6fe; }
+.drive-status { display: flex; align-items: center; gap: .6rem; font-size: .84rem; margin-bottom: .9rem; }
+.drive-status .dot { width: 8px; height: 8px; border-radius: 50%; background: #d1d5db; flex-shrink: 0; }
+.drive-status .dot.connected { background: var(--green); }
+.drive-status .dot.loading { background: var(--amber); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+.drive-breadcrumb { display: flex; align-items: center; gap: .3rem; flex-wrap: wrap; margin-bottom: .7rem; font-size: .78rem; color: var(--muted); }
+.bc-item { cursor: pointer; color: var(--purple); text-decoration: underline; }
+.bc-sep { color: var(--muted); }
+
+.drive-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: .3rem; }
+.drive-item {
+  display: flex; align-items: center; gap: .55rem;
+  padding: .45rem .8rem; border-radius: 7px; cursor: pointer;
+  border: 1px solid transparent; transition: all .15s; font-size: .83rem;
+}
+.drive-item:hover { background: #ede9fe; border-color: #ddd6fe; }
+.drive-item.selected { background: var(--purple-lt); border-color: var(--purple); }
+.drive-item .di-icon { font-size: 1.1rem; flex-shrink: 0; }
+.drive-item .di-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.drive-item .di-count { font-size: .72rem; color: var(--muted); flex-shrink: 0; }
+
+.drive-selected-info { margin-top: .8rem; padding: .6rem .9rem; background: var(--white); border-radius: 7px; border: 1px solid #ddd6fe; font-size: .82rem; }
+
+/* ── CONFIG ERROR BOX ── */
+.config-error { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: .85rem 1rem; margin-bottom: 1rem; font-size: .82rem; color: #991b1b; }
+.config-error code { background: rgba(153,27,27,.1); padding: .1rem .3rem; border-radius: 3px; font-family: monospace; }
+
+/* ── FILE LIST ── */
+.file-list { display: flex; flex-direction: column; gap: .3rem; margin-top: .9rem; max-height: 260px; overflow-y: auto; }
+.chip { display: flex; align-items: center; gap: .55rem; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: .45rem .8rem; font-size: .82rem; transition: background .15s; }
+.chip:hover { background: var(--blue-lt); }
+.chip-ext { background: var(--navy2); color: #fff; font-size: .6rem; font-weight: 700; padding: .12rem .38rem; border-radius: 3px; flex-shrink: 0; }
+.chip-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip-size { font-size: .75rem; color: var(--muted); flex-shrink: 0; }
+.chip-del { background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: .9rem; padding: 0 .1rem; }
+.chip-del:hover { color: var(--red); }
+
+/* ── ACTION BAR ── */
+.action-bar { display: flex; justify-content: center; align-items: center; margin-top: .9rem; padding-top: .75rem; border-top: 1px solid var(--border); flex-wrap: wrap; gap: .5rem; }
+.file-count { font-size: .78rem; color: var(--muted); }
+.btn-clear { background: none; border: 1px solid var(--border); color: var(--red); font-size: .78rem; padding: .35rem 1rem; border-radius: 20px; cursor: pointer; transition: all .2s; font-family: inherit; }
+.btn-clear:hover { background: var(--red-lt); border-color: var(--red); }
+
+/* ── PROCESS BUTTON ── */
+.process-wrap { margin-top: 1.2rem; display: flex; justify-content: center; }
+.btn-process {
+  display: inline-flex; align-items: center; gap: .55rem;
+  background: linear-gradient(135deg, var(--navy2) 0%, var(--blue) 100%);
+  color: #fff; border: none; border-radius: 8px;
+  padding: .8rem 2.2rem; font-size: .95rem; font-weight: 600;
+  cursor: pointer; transition: all .2s; font-family: inherit;
+  box-shadow: 0 2px 8px rgba(30,64,175,.3); min-width: 240px; justify-content: center;
+}
+.btn-process:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(30,64,175,.4); }
+.btn-process:active { transform: scale(.98); }
+
+/* ── RESULT TOOLBAR ── */
+.result-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .7rem; padding-bottom: .9rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+.stat-badge { background: var(--blue-lt); border: 1px solid var(--blue-bd); border-radius: 20px; padding: .2rem .7rem; font-size: .75rem; color: var(--navy2); font-weight: 600; }
+.toolbar-right { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; }
+
+/* ── BUTTONS ── */
+.btn { padding: .5rem 1.1rem; border: none; border-radius: 6px; font-size: .82rem; font-weight: 500; cursor: pointer; transition: all .15s; font-family: inherit; display: inline-flex; align-items: center; gap: .35rem; }
+.btn:active { transform: scale(.97); }
+.btn-navy  { background: var(--navy); color: #fff; }
+.btn-navy:hover { background: var(--navy2); }
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { background: #15803d; }
+.btn-outline { background: none; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
+
+/* ── ROW CARDS ── */
+.card-list { display: flex; flex-direction: column; gap: .65rem; }
+.row-card { border: 1px solid var(--border); border-radius: 9px; overflow: hidden; background: var(--white); transition: box-shadow .15s; }
+.row-card:hover { box-shadow: var(--shadow-md); }
+.row-card-head { display: flex; align-items: center; gap: .55rem; padding: .55rem .85rem; background: #f8fafc; border-bottom: 1px solid var(--border); }
+.row-card-head.lv1-head { background: var(--blue-lt); }
+.row-card-head.lv2-head { background: var(--green-lt); }
+.row-card-head.lv3-head { background: var(--amber-lt); }
+.row-num { font-size: .68rem; color: var(--muted); min-width: 20px; text-align: center; }
+.lv-badge { display: inline-block; font-size: .6rem; font-weight: 700; padding: .1rem .38rem; border-radius: 3px; flex-shrink: 0; }
+.lv0 { background: #e2e8f0; color: #475569; }
+.lv1 { background: var(--blue-bd); color: var(--navy); }
+.lv2 { background: #bbf7d0; color: #166534; }
+.lv3 { background: #fde68a; color: #92400e; }
+.row-title { flex: 1; font-size: .87rem; font-weight: 500; outline: none; border: none; background: transparent; padding: .1rem .25rem; border-radius: 3px; font-family: inherit; color: var(--text); }
+.row-title:focus { background: rgba(37,99,235,.07); outline: 1px solid var(--blue); }
+.row-card-head.lv1-head .row-title { font-weight: 700; }
+.del-btn { background: none; border: none; color: #d1d5db; cursor: pointer; font-size: .9rem; padding: .1rem .2rem; }
+.del-btn:hover { color: var(--red); }
+.row-card-body { padding: .7rem .9rem; display: flex; flex-direction: column; gap: .5rem; }
+.content-box { border-radius: 6px; padding: .55rem .75rem; font-size: .83rem; line-height: 1.7; outline: none; white-space: pre-wrap; word-break: break-word; font-family: inherit; min-height: 2.5rem; }
+.content-box:focus { outline: 1px solid var(--blue); }
+.content-box.has-content { background: #f9fafb; border: 1px solid var(--border); }
+.content-box.empty { background: var(--bg); border: 1px dashed #cbd5e1; color: #94a3b8; font-style: italic; }
+
+/* ── PROGRESS BAR ── */
+.progress-wrap { width: 260px; margin-top: .85rem; }
+.progress-bar-track { background: rgba(255,255,255,.18); border-radius: 99px; height: 6px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width .25s; width: 0%; }
+.progress-pct { color: rgba(255,255,255,.7); font-size: .72rem; margin-top: .3rem; text-align: center; }
+
+/* ── OVERLAY ── */
+#overlay { position: fixed; inset: 0; background: rgba(15,23,42,.88); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+.spin { width: 42px; height: 42px; border: 4px solid rgba(255,255,255,.15); border-top-color: var(--blue); border-radius: 50%; animation: spin .75s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#overlayMsg { color: #fff; margin-top: 1rem; font-size: .88rem; }
+.overlay-sub { color: rgba(255,255,255,.6); font-size: .76rem; margin-top: .35rem; max-width: 320px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── TOASTS ── */
+#toasts { position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 10000; display: flex; flex-direction: column; gap: .4rem; }
+.toast { background: var(--white); border-radius: 8px; padding: .65rem 1rem; font-size: .81rem; box-shadow: 0 4px 16px rgba(0,0,0,.12); border-left: 4px solid var(--blue); animation: toastIn .2s ease; display: flex; align-items: center; gap: .45rem; max-width: 340px; transition: opacity .3s; }
+.toast.ok  { border-left-color: var(--green); }
+.toast.err { border-left-color: var(--red); }
+.toast.wrn { border-left-color: var(--amber); }
+@keyframes toastIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ── FOOTER ── */
+footer { background: var(--navy); color: white; text-align: center; padding: .9rem 1rem; font-size: 0.8rem; margin-top: 1rem; position: relative; z-index: 1; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--muted); }
+.empty-state .es-icon { font-size: 2.5rem; margin-bottom: .75rem; display: block; }
+
+/* ── INFO BOX ── */
+.info-box { background: var(--blue-lt); border: 1px solid var(--blue-bd); border-radius: 8px; padding: .75rem 1rem; font-size: .8rem; color: var(--navy); line-height: 1.6; }
+.info-box b { font-weight: 700; }
+.info-box code { background: rgba(37,99,235,.12); padding: .1rem .3rem; border-radius: 3px; font-family: monospace; font-size: .78rem; }
+
+/* ================= MÀN HÌNH KHỞI ĐỘNG ================= */
+#loginOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 15% 20%,  rgba(120,210,255,0.55), transparent 38%),
+    radial-gradient(circle at 85% 15%,  rgba(0,200,255,0.30),   transparent 35%),
+    radial-gradient(circle at 70% 80%,  rgba(100,180,255,0.38), transparent 40%),
+    radial-gradient(circle at 20% 80%,  rgba(160,230,255,0.30), transparent 36%),
+    radial-gradient(circle at 50% 50%,  rgba(200,240,255,0.18), transparent 55%),
+    linear-gradient(160deg, #d0efff 0%, #b8e4ff 25%, #caf0ff 55%, #daf5ff 80%, #eafaff 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 390px;
+  background: rgba(255,255,255,0.52);
+  border: 1px solid rgba(255,255,255,0.70);
+  border-radius: 28px;
+  padding: 38px 28px;
+  text-align: center;
+  box-shadow:
+    0 10px 40px rgba(13,71,161,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  box-sizing: border-box;
+  animation: loginPop .35s ease;
+}
+
+@keyframes loginPop {
+  from { transform: scale(.9); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+
+.login-logo {
+  width:150px !important;
+  height:150px !important;
+  object-fit: contain;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 6px 16px rgba(0,100,200,0.20));
+}
+
+.login-title {
+  color: #0d47a1;
+  font-size: 25px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: .5px;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+
+.login-subtitle {
+  color: #3d6b92;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+#loginBtn {
+  width: 100%;
+  height: 56px;
+  border: none;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .2s, opacity .2s;
+  box-shadow: none;
+}
+
+#loginBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,114,255,.45);
+}
+
+#loginBtn:active { transform: scale(.98); }
+
+@media (max-width: 480px) {
+  .login-card { padding: 30px 20px; border-radius: 22px; }
+  .login-logo { width: 110px; height: 110px; }
+  .login-title { font-size: 24px; }
+  .login-subtitle { font-size: 13px; }
+  #loginBtn { height: 50px; font-size: 15px; }
+}
+</style>
+</head>
+<body>
+<!-- ===== MÀN HÌNH KHỞI ĐỘNG ===== -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <img src="icon.png" class="login-logo" alt="Logo">
+    <div class="login-title">
+      Tổng Hợp Báo Cáo <br> Công Tác Hội & <br> Dư Luận Xã Hội
+    </div>
+    <button id="loginBtn">🚀 Truy cập ứng dụng</button>
+  </div>
+</div>
+
+<div class="bg-layer"></div>
+<div class="bg-pattern"></div>
+
+<header>
+  <h1>Tổng Hợp Báo Cáo <br> Công Tác Hội & <br> Dư Luận Xã Hội</h1>
+</header>
+
+<div class="wrap">
+
+  <!-- UPLOAD CARD -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">📂</span>
+      <h2>Chọn nguồn tài liệu</h2>
+    </div>
+    <div class="card-body">
+
+      <!-- TABS -->
+      <div class="source-tabs">
+        <button class="tab-btn active" onclick="switchTab('local')" id="tab-local">
+          💻 Máy tính
+        </button>
+        <button class="tab-btn drive-tab" onclick="switchTab('drive')" id="tab-drive">
+          ☁️ Google Drive
+        </button>
+      </div>
+
+      <!-- ===== TAB LOCAL ===== -->
+      <div class="tab-panel active" id="panel-local">
+
+        <!-- Chọn thư mục (nếu trình duyệt hỗ trợ) -->
+        <div class="folder-actions" id="folderActions">
+          <button class="btn-folder" onclick="pickFolder()">
+            📁 Chọn thư mục (toàn bộ .docx)
+          </button>
+          <button class="btn-folder" onclick="document.getElementById('fileInput').click()">
+            📄 Chọn từng file
+          </button>
+        </div>
+        <div id="folderApiNote" style="display:none;" class="info-box" style="margin-bottom:.8rem;">
+          ⚠️ Trình duyệt chưa hỗ trợ chọn thư mục. Hãy dùng <b>kéo-thả thư mục</b> hoặc chọn nhiều file cùng lúc.
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+          <span class="dz-icon">📁</span>
+          <h3>Kéo thả thư mục hoặc nhiều file .docx vào đây</h3>
+          <small>Hỗ trợ kéo cả thư mục — khuyến nghị dưới 200 tệp</small><br>
+          <span class="fmt-pill">.docx</span>
+        </div>
+        <input type="file" id="fileInput" multiple accept=".docx">
+
+        <div class="file-list" id="fileList"></div>
+
+        <div class="action-bar">
+          <span class="file-count" id="countLabel"></span>
+          <button class="btn-clear" onclick="clearAll()">🗑️ Xóa tất cả</button>
+        </div>
+      </div>
+
+      <!-- ===== TAB DRIVE ===== -->
+      <div class="tab-panel" id="panel-drive">
+
+        <!-- Lỗi config (hiện nếu config.js thiếu) -->
+        <div class="config-error" id="configError" style="display:none;">
+          ⚠️ Chưa cấu hình <code>config.js</code> — hãy tạo file <code>config.js</code> cùng thư mục với <code>index.html</code> và điền <code>DRIVE_CLIENT_ID</code>.
+        </div>
+
+        <!-- Trạng thái kết nối -->
+        <div class="drive-panel">
+          <div class="drive-status">
+            <span class="dot" id="driveDot"></span>
+            <span id="driveStatusText">Chưa kết nối — nhấn "Đăng nhập Google" để bắt đầu</span>
+          </div>
+
+          <div id="driveAuthActions" style="display:none; margin-bottom:.8rem;">
+            <button class="btn-folder btn-folder-purple" onclick="signInDrive()">🔐 Đăng nhập Google</button>
+            <button class="btn-folder" onclick="signOutDrive()" id="btnSignOut" style="display:none;">Đăng xuất</button>
+          </div>
+
+          <!-- Breadcrumb -->
+          <div class="drive-breadcrumb" id="driveBreadcrumb" style="display:none;"></div>
+
+          <!-- File/Folder list -->
+          <div class="drive-list" id="driveList" style="display:none;"></div>
+
+          <!-- Thông tin thư mục đã chọn -->
+          <div class="drive-selected-info" id="driveSelectedInfo" style="display:none;"></div>
+        </div>
+
+      </div><!-- end panel-drive -->
+
+    </div><!-- end card-body -->
+
+    <!-- PROCESS BUTTON (chung cho cả 2 tab) -->
+    <div class="process-wrap" style="padding: 0 1.4rem 1.4rem;">
+      <button class="btn-process" onclick="processFiles()">
+        ⚡ Tổng hợp báo cáo
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULT CARD -->
+  <div class="card" id="resultCard" style="display:none;">
+    <div class="card-header">
+      <span class="icon">📋</span>
+      <h2>Kết quả tổng hợp</h2>
+    </div>
+    <div class="card-body">
+      <div class="result-toolbar">
+        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+          <span class="stat-badge" id="statText"></span>
+          <span style="font-size:.76rem;color:var(--muted);" id="srcLabel"></span>
+        </div>
+        <div class="toolbar-right" style="justify-content:center;width:100%;">
+          <button class="btn btn-green" onclick="exportWord()">📤 Xuất Word</button>
+        </div>
+      </div>
+      <div class="card-list" id="tBody">
+        <div class="empty-state">
+          <span class="es-icon">📄</span>
+          Chưa có kết quả
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>HỘI LIÊN HIỆP PHỤ NỮ PHƯỜNG THANH KHÊ</footer>
+
+<div id="overlay">
+  <div class="spin"></div>
+  <span id="overlayMsg">Đang xử lý...</span>
+  <span class="overlay-sub" id="overlayProgress"></span>
+  <div class="progress-wrap">
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="progress-pct" id="progressPct"></div>
+  </div>
+</div>
+<div id="toasts"></div>
+
+<!-- Google API -->
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+'use strict';
+
+// ================================================================
+// CẤU TRÚC MẪU CỐ ĐỊNH
+// ================================================================
+const TEMPLATE = [
+  { key: 'I',      level: 1, header: 'I. TÌNH HÌNH TƯ TƯỞNG, ĐỜI SỐNG HỘI VIÊN, PHỤ NỮ' },
+  { key: 'I.1',    level: 2, header: '1. Tình hình tư tưởng cán bộ, hội viên và Nhân dân' },
+  { key: 'I.2',    level: 2, header: '2. Những vấn đề được dư luận quan tâm' },
+  { key: 'I.2a',   level: 3, header: '- An sinh xã hội; VSMT; Trật tự đô thị; Không gian mạng…' },
+  { key: 'II',     level: 1, header: 'II. KẾT QUẢ CÔNG TÁC HỘI VÀ PHONG TRÀO PHỤ NỮ' },
+  { key: 'II.1',   level: 2, header: '1. Hoạt động nổi bật theo trọng tâm chỉ đạo' },
+  { key: 'II.1a',  level: 3, header: '- Phong trào "Xây dựng người phụ nữ Việt Nam thời đại mới"' },
+  { key: 'II.1b',  level: 3, header: '- Cuộc vận động "Gia đình 5 không, 3 sạch, 3 an"' },
+  { key: 'II.1c',  level: 3, header: '- Các phong trào thi đua khác' },
+  { key: 'II.2',   level: 2, header: '2. Thực hiện các khâu đột phá' },
+  { key: 'II.2a',  level: 3, header: '- Ứng dụng công nghệ thông tin' },
+  { key: 'II.2b',  level: 3, header: '- Chuyển đổi số trong hoạt động Hội' },
+  { key: 'II.2c',  level: 3, header: '- Phòng, chống bạo lực gia đình' },
+  { key: 'II.3',   level: 2, header: '3. Chương trình, mô hình nổi bật' },
+  { key: 'II.3a',  level: 3, header: '- Mẹ đỡ đầu' },
+  { key: 'II.3b',  level: 3, header: '- Hoạt động an sinh (trao quà, hỗ trợ…)' },
+  { key: 'II.3c',  level: 3, header: '- Mô hình/hoạt động khác' },
+  { key: 'II.4',   level: 2, header: '4. Kết quả thực hiện nhiệm vụ trọng tâm' },
+  { key: 'II.5',   level: 2, header: '5. Nhiệm vụ theo chỉ đạo địa phương' },
+  { key: 'IV',     level: 1, header: 'IV. ĐỀ XUẤT, KIẾN NGHỊ' },
+  { key: 'V',      level: 1, header: 'V. NHIỆM VỤ TRỌNG TÂM THÁNG TIẾP THEO' },
+];
+
+let rowMap = {};
+let files  = [];   // File objects (từ máy tính)
+let driveFiles = []; // { id, name, size } (từ Drive)
+let rows   = [];
+let activeTab = 'local';
+
+// ── DOM refs ─────────────────────────────────────────────────────
+const dropZone    = document.getElementById('dropZone');
+const fileInput   = document.getElementById('fileInput');
+const fileList    = document.getElementById('fileList');
+const resultCard  = document.getElementById('resultCard');
+const tBody       = document.getElementById('tBody');
+const statText    = document.getElementById('statText');
+const srcLabel    = document.getElementById('srcLabel');
+const countLabel  = document.getElementById('countLabel');
+const overlay     = document.getElementById('overlay');
+const overlayMsg  = document.getElementById('overlayMsg');
+const overlayPrg  = document.getElementById('overlayProgress');
+const progressFill= document.getElementById('progressFill');
+const progressPct = document.getElementById('progressPct');
+
+// ================================================================
+// TAB SWITCHING
+// ================================================================
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+// ================================================================
+// LOCAL: CHỌN THƯ MỤC (File System Access API)
+// ================================================================
+async function pickFolder() {
+  if (window.showDirectoryPicker) {
+    try {
+      const dirHandle = await window.showDirectoryPicker({ mode: 'read' });
+      setLoading(true, 'Đang đọc thư mục...', dirHandle.name, 0);
+      const collected = [];
+      await collectDocxFromDir(dirHandle, collected);
+      setLoading(false);
+      if (collected.length === 0) {
+        toast('Không tìm thấy file .docx trong thư mục này', 'wrn'); return;
+      }
+      addFiles(collected);
+      toast(`✅ Đã tìm thấy ${collected.length} file .docx trong thư mục`, 'ok');
+    } catch (e) {
+      setLoading(false);
+      if (e.name !== 'AbortError') toast('Lỗi đọc thư mục: ' + e.message, 'err');
+    }
+  } else {
+    // Fallback: input[type=file] webkitdirectory
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.multiple = true;
+    inp.webkitdirectory = true;
+    inp.accept = '.docx';
+    inp.onchange = () => {
+      const docxFiles = Array.from(inp.files).filter(f =>
+        f.name.toLowerCase().endsWith('.docx'));
+      addFiles(docxFiles);
+    };
+    inp.click();
+  }
+}
+
+async function collectDocxFromDir(dirHandle, out) {
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.docx')) {
+      const file = await entry.getFile();
+      out.push(file);
+    } else if (entry.kind === 'directory') {
+      await collectDocxFromDir(entry, out);
+    }
+  }
+}
+
+// ── Drag & Drop ──────────────────────────
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', async e => {
+  e.preventDefault(); dropZone.classList.remove('over');
+  const items = Array.from(e.dataTransfer.items || []);
+  // Kiểm tra xem có thư mục không (DataTransferItem API)
+  const hasDir = items.some(it => it.webkitGetAsEntry && it.webkitGetAsEntry()?.isDirectory);
+  if (hasDir) {
+    setLoading(true, 'Đang đọc thư mục kéo-thả...', '', 0);
+    const collected = [];
+    for (const item of items) {
+      const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
+      if (entry) await traverseEntry(entry, collected);
+    }
+    setLoading(false);
+    if (collected.length === 0) {
+      toast('Không tìm thấy file .docx trong thư mục', 'wrn'); return;
+    }
+    addFiles(collected);
+    toast(`✅ Kéo thả: ${collected.length} file .docx`, 'ok');
+  } else {
+    addFiles(e.dataTransfer.files);
+  }
+});
+fileInput.addEventListener('change', e => { addFiles(e.target.files); fileInput.value = ''; });
+
+function traverseEntry(entry, out) {
+  return new Promise(resolve => {
+    if (entry.isFile) {
+      entry.file(f => {
+        if (f.name.toLowerCase().endsWith('.docx')) out.push(f);
+        resolve();
+      }, resolve);
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      reader.readEntries(async entries => {
+        for (const e of entries) await traverseEntry(e, out);
+        resolve();
+      }, resolve);
+    } else resolve();
+  });
+}
+
+function addFiles(list) {
+  let added = 0;
+  const totalSize = files.reduce((s, f) => s + f.size, 0) +
+    Array.from(list).reduce((s, f) => s + f.size, 0);
+  if (totalSize > 50 * 1024 * 1024) toast('⚠️ Tổng dung lượng lớn (>50MB) — có thể chậm', 'wrn');
+  Array.from(list).forEach(f => {
+    if (f.name.split('.').pop().toLowerCase() !== 'docx') {
+      toast(`"${f.name}" không hỗ trợ — chỉ nhận .docx`, 'err'); return;
+    }
+    if (files.find(x => x.name === f.name && x.size === f.size)) {
+      toast(`"${f.name}" đã có trong danh sách`, 'wrn'); return;
+    }
+    files.push(f); added++;
+  });
+  if (added) renderFileList();
+}
+
+function renderFileList() {
+  const frag = document.createDocumentFragment();
+  files.forEach((f, i) => {
+    const div = document.createElement('div');
+    div.className = 'chip';
+    div.innerHTML = `
+      <span class="chip-ext">DOCX</span>
+      <span class="chip-name" title="${esc(f.name)}">${esc(f.name)}</span>
+      <span class="chip-size">${fmtSize(f.size)}</span>
+      <button class="chip-del" title="Xóa" data-idx="${i}">✕</button>`;
+    frag.appendChild(div);
+  });
+  fileList.innerHTML = '';
+  fileList.appendChild(frag);
+  fileList.onclick = e => {
+    const btn = e.target.closest('.chip-del');
+    if (!btn) return;
+    files.splice(parseInt(btn.dataset.idx, 10), 1);
+    renderFileList();
+  };
+  countLabel.textContent = files.length ? `${files.length} tệp đã tải` : '';
+}
+
+function clearAll() {
+  if ((files.length || driveFiles.length) && !confirm('Xóa tất cả file đã chọn?')) return;
+  files = []; driveFiles = []; rows = []; rowMap = {};
+  renderFileList();
+  renderDriveFileList();
+  resultCard.style.display = 'none';
+  tBody.innerHTML = '';
+  toast('Đã xóa tất cả', 'ok');
+}
+
+// ================================================================
+// GOOGLE DRIVE INTEGRATION
+// ================================================================
+let gapiReady = false;
+let driveSignedIn = false;
+let currentFolderId = 'root';
+let currentFolderName = 'My Drive';
+let breadcrumb = [{ id: 'root', name: 'My Drive' }];
+let selectedDriveFolder = null;
+let tokenClient = null;
+let accessToken = null;
+
+async function initDriveApi() {
+  // Đọc Client ID từ config.js (biến toàn cục DRIVE_CLIENT_ID)
+  const clientId = (typeof DRIVE_CLIENT_ID !== 'undefined') ? DRIVE_CLIENT_ID.trim() : '';
+  if (!clientId) {
+    document.getElementById('configError').style.display = 'block';
+    toast('Thiếu DRIVE_CLIENT_ID trong config.js', 'err');
+    return;
+  }
+
+  // Load gapi
+  if (!gapiReady) {
+    try {
+      await new Promise((res, rej) => {
+        gapi.load('client', { callback: res, onerror: rej });
+      });
+      await gapi.client.init({});
+      gapiReady = true;
+    } catch (e) {
+      toast('Lỗi khởi tạo Google API: ' + e.message, 'err'); return;
+    }
+  }
+
+  // Tạo token client
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: clientId,
+    scope: 'https://www.googleapis.com/auth/drive.readonly',
+    callback: async (resp) => {
+      if (resp.error) { toast('Đăng nhập thất bại: ' + resp.error, 'err'); return; }
+      accessToken = resp.access_token;
+      gapi.client.setToken({ access_token: accessToken });
+      driveSignedIn = true;
+      updateDriveUI(true);
+      await loadDriveFolder('root', 'My Drive');
+      toast('✅ Kết nối Google Drive thành công!', 'ok');
+    }
+  });
+
+  document.getElementById('driveAuthActions').style.display = 'flex';
+  document.getElementById('driveDot').className = 'dot';
+  document.getElementById('driveStatusText').textContent = 'Sẵn sàng — nhấn "Đăng nhập Google" để kết nối';
+}
+
+function signInDrive() {
+  if (!tokenClient) { toast('Đang khởi tạo — vui lòng đợi giây lát', 'wrn'); return; }
+  tokenClient.requestAccessToken({ prompt: '' });
+}
+
+function signOutDrive() {
+  if (accessToken) google.accounts.oauth2.revoke(accessToken, () => {});
+  accessToken = null; driveSignedIn = false;
+  gapi.client.setToken(null);
+  updateDriveUI(false);
+  document.getElementById('driveList').style.display = 'none';
+  document.getElementById('driveBreadcrumb').style.display = 'none';
+  document.getElementById('driveSelectedInfo').style.display = 'none';
+  driveFiles = [];
+  toast('Đã đăng xuất Drive', 'ok');
+}
+
+function updateDriveUI(connected) {
+  const dot = document.getElementById('driveDot');
+  const txt = document.getElementById('driveStatusText');
+  const btnSignOut = document.getElementById('btnSignOut');
+  dot.className = connected ? 'dot connected' : 'dot';
+  txt.textContent = connected ? '✅ Đã kết nối Google Drive' : 'Chưa kết nối';
+  btnSignOut.style.display = connected ? 'inline-flex' : 'none';
+  document.querySelector('[onclick="signInDrive()"]').style.display = connected ? 'none' : 'inline-flex';
+}
+
+async function loadDriveFolder(folderId, folderName) {
+  if (!accessToken) return;
+  setDriveLoading(true);
+  try {
+    const resp = await gapi.client.request({
+      path: 'https://www.googleapis.com/drive/v3/files',
+      params: {
+        q: `'${folderId}' in parents and trashed = false and (mimeType = 'application/vnd.google-apps.folder' or (mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'))`,
+        fields: 'files(id,name,mimeType,size,modifiedTime)',
+        orderBy: 'folder,name',
+        pageSize: 500
+      }
+    });
+    currentFolderId = folderId;
+    currentFolderName = folderName;
+    renderDriveItems(resp.result.files || []);
+  } catch (e) {
+    toast('Lỗi tải thư mục Drive: ' + (e.result?.error?.message || e.message), 'err');
+  }
+  setDriveLoading(false);
+}
+
+function renderDriveItems(items) {
+  const list = document.getElementById('driveList');
+  list.style.display = 'flex';
+  document.getElementById('driveBreadcrumb').style.display = 'flex';
+  renderBreadcrumb();
+
+  const docxCount = items.filter(f => f.mimeType !== 'application/vnd.google-apps.folder').length;
+  if (items.length === 0) {
+    list.innerHTML = '<div style="padding:.7rem;color:var(--muted);font-size:.82rem;">📭 Thư mục trống</div>';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+
+  // Nút "Chọn thư mục này" nếu có file docx
+  if (docxCount > 0) {
+    const selectBtn = document.createElement('div');
+    selectBtn.className = 'drive-item selected';
+    selectBtn.innerHTML = `<span class="di-icon">✅</span><span class="di-name" style="color:var(--purple);font-weight:700;">Chọn thư mục này (${docxCount} file .docx)</span>`;
+    selectBtn.onclick = () => selectCurrentFolder(items.filter(f => f.mimeType !== 'application/vnd.google-apps.folder'));
+    frag.appendChild(selectBtn);
+  }
+
+  items.forEach(item => {
+    const isFolder = item.mimeType === 'application/vnd.google-apps.folder';
+    const div = document.createElement('div');
+    div.className = 'drive-item';
+    div.innerHTML = `
+      <span class="di-icon">${isFolder ? '📁' : '📄'}</span>
+      <span class="di-name">${esc(item.name)}</span>
+      <span class="di-count">${isFolder ? '→' : fmtSize(parseInt(item.size||0))}</span>`;
+    if (isFolder) {
+      div.onclick = () => {
+        breadcrumb.push({ id: item.id, name: item.name });
+        loadDriveFolder(item.id, item.name);
+      };
+    } else {
+      div.title = item.name + ' — click để thêm vào danh sách';
+      div.onclick = () => toggleDriveFile(item, div);
+    }
+    frag.appendChild(div);
+  });
+  list.innerHTML = '';
+  list.appendChild(frag);
+}
+
+function toggleDriveFile(item, el) {
+  const idx = driveFiles.findIndex(f => f.id === item.id);
+  if (idx >= 0) {
+    driveFiles.splice(idx, 1);
+    el.classList.remove('selected');
+  } else {
+    driveFiles.push({ id: item.id, name: item.name, size: parseInt(item.size || 0) });
+    el.classList.add('selected');
+  }
+  renderDriveFileList();
+}
+
+function selectCurrentFolder(docxItems) {
+  driveFiles = docxItems.map(f => ({ id: f.id, name: f.name, size: parseInt(f.size || 0) }));
+  renderDriveFileList();
+  toast(`✅ Đã chọn ${driveFiles.length} file .docx từ thư mục "${currentFolderName}"`, 'ok');
+}
+
+function renderDriveFileList() {
+  const info = document.getElementById('driveSelectedInfo');
+  if (driveFiles.length === 0) { info.style.display = 'none'; return; }
+  info.style.display = 'block';
+  info.innerHTML = `<b>📋 Đã chọn ${driveFiles.length} file từ Drive:</b><br><small style="color:var(--muted);">${driveFiles.slice(0,5).map(f=>esc(f.name)).join(', ')}${driveFiles.length>5?' …và '+(driveFiles.length-5)+' file khác':''}</small>`;
+}
+
+function renderBreadcrumb() {
+  const bc = document.getElementById('driveBreadcrumb');
+  bc.innerHTML = breadcrumb.map((item, i) => {
+    if (i === breadcrumb.length - 1) return `<span>${esc(item.name)}</span>`;
+    return `<span class="bc-item" onclick="navigateBreadcrumb(${i})">${esc(item.name)}</span><span class="bc-sep"> › </span>`;
+  }).join('');
+}
+
+function navigateBreadcrumb(idx) {
+  breadcrumb = breadcrumb.slice(0, idx + 1);
+  const item = breadcrumb[idx];
+  loadDriveFolder(item.id, item.name);
+}
+
+function setDriveLoading(on) {
+  const dot = document.getElementById('driveDot');
+  dot.className = on ? 'dot loading' : (driveSignedIn ? 'dot connected' : 'dot');
+}
+
+// ── Đọc file từ Drive ────────────────────────────────────────────
+async function readDriveFile(fileId, fileName) {
+  const resp = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  );
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const buffer = await resp.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+  return result.value || '';
+}
+
+// ================================================================
+// ĐỌC DOCX (local)
+// ================================================================
+function readDocx(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onerror = rej;
+    r.onload = e => {
+      mammoth.extractRawText({ arrayBuffer: e.target.result })
+        .then(d => res(d.value || ''))
+        .catch(() => rej(new Error('Không đọc được file: ' + file.name)));
+    };
+    r.readAsArrayBuffer(file);
+  });
+}
+
+// ================================================================
+// BỘ LỌC & LÀM SẠCH
+// ================================================================
+const SIG_PAT  = /^(chi hội trưởng|chủ tịch|phó chủ tịch|thư ký|trưởng ban|phó ban|bí thư|phó bí thư|uỷ ban|ủy ban|xác nhận của|người báo cáo|kính trình|nơi nhận|kính gửi|ngày\s+tháng|tp\.|quận|phường|xã\s+\w)/i;
+const NAME_SIG_PAT = /^[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼẾỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴỶỸ]+(\s+[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼẾỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴỶỸ]+){1,4}$/;
+const DOTS_PAT = /^[.\-_\s]{5,}$|^\d+\s*\/\s*\d+$/;
+const HEADING_PAT = /^(I{1,3}|IV|VI{0,3}|V|IX|X|\d+)\s*[.\/\)]/i;
+const DASH_PAT    = /^[-\u2013\u2014]\s+\S/;
+const SENT_END    = /[.!?;:…,]$/;
+const UNIT_HDR    = /^(cộng hòa|cộng hoà|đảng cộng sản|ban chấp hành|hội liên hiệp|hội phụ nữ|chi hội|tổ hội|ủy ban mặt trận|báo cáo|kính gửi|v\/v|số:?\s*\d)/i;
+
+const SUB_RULES = [
+  { key: 'I.2a',  pat: /an sinh|giá cả|việc làm|thu nhập|thực phẩm|y tế|giáo dục|hộ nghèo|chính sách|vệ sinh môi trường|vsmt|trật tự đô thị|không gian mạng/ },
+  { key: 'II.1a', pat: /phụ nữ việt nam thời đại|xây dựng người phụ nữ/ },
+  { key: 'II.1b', pat: /5 không|3 sạch|3 an|gia đình 5|cuộc vận động/ },
+  { key: 'II.1c', pat: /cử chỉ đẹp|địa chỉ hạnh phúc|điểm đến thân thiện|phong trào thi đua/ },
+  { key: 'II.2a', pat: /công nghệ thông tin|ứng dụng công nghệ/ },
+  { key: 'II.2b', pat: /chuyển đổi số/ },
+  { key: 'II.2c', pat: /bạo lực gia đình|phòng.chống bạo lực/ },
+  { key: 'II.3a', pat: /mẹ đỡ đầu/ },
+  { key: 'II.3b', pat: /an sinh|trao quà|hỗ trợ/ },
+  { key: 'II.3c', pat: /mô hình|hoạt động khác/ },
+];
+
+function cleanRaw(text) {
+  if (!text) return '';
+  let t = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  t = t.replace(/[ \t]+/g, ' ');
+  t = t.replace(/\n{4,}/g, '\n\n\n');
+  return t.trim();
+}
+
+function shouldSkipLine(line) {
+  if (!line) return true;
+  if (DOTS_PAT.test(line)) return true;
+  if (SIG_PAT.test(line)) return true;
+  if (NAME_SIG_PAT.test(line)) return true;
+  if (line.length < 10 && !HEADING_PAT.test(line) && !DASH_PAT.test(line)) return true;
+  return false;
+}
+
+function mergeWrappedLines(lines) {
+  const src = lines.slice();
+  const out = [];
+  for (let i = 0; i < src.length; i++) {
+    const cur = src[i];
+    if (!cur.trim()) { out.push(cur); continue; }
+    const next = i + 1 < src.length ? src[i + 1].trim() : '';
+    if (!SENT_END.test(cur.trimEnd()) && next && !HEADING_PAT.test(next) && !DASH_PAT.test(next) && !shouldSkipLine(next)) {
+      src[i + 1] = cur.trimEnd() + ' ' + src[i + 1].trimStart();
+    } else {
+      out.push(cur);
+    }
+  }
+  return out;
+}
+
+function dedupLines(lines) {
+  const seen = new Set();
+  const out  = [];
+  for (const l of lines) {
+    const key = l.trim().replace(/\s+/g, ' ').toLowerCase();
+    if (!key) continue;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(l);
+  }
+  return out;
+}
+
+function matchTemplate(line) {
+  const m = line.match(/^(IV|V|I{1,3}|VI{0,3}|\d+)\s*[.\/\)]/i);
+  if (!m) return null;
+  const p = m[1].toUpperCase();
+  const MAP = { 'I':'I','II':'II','IV':'IV','V':'V','1':'I.1','2':'I.2','3':'II.1','4':'II.4','5':'II.5' };
+  return MAP[p] ?? null;
+}
+
+function matchSubTemplate(line) {
+  const h = line.toLowerCase();
+  for (const rule of SUB_RULES) { if (rule.pat.test(h)) return rule.key; }
+  return null;
+}
+
+function parseSections(text) {
+  const rawLines = text.split(/\r?\n/);
+  let contentStart = 0;
+  for (let i = 0; i < rawLines.length; i++) {
+    if (HEADING_PAT.test(rawLines[i].trim())) { contentStart = i; break; }
+  }
+  const content = mergeWrappedLines(rawLines.slice(contentStart));
+  const slotMap = new Map();
+  let curKey = null;
+  for (const raw of content) {
+    const line = raw.trim();
+    if (shouldSkipLine(line)) continue;
+    let key = null;
+    if (HEADING_PAT.test(line))   key = matchTemplate(line);
+    else if (DASH_PAT.test(line)) key = matchSubTemplate(line);
+    if (key) { curKey = key; }
+    else if (curKey) {
+      if (UNIT_HDR.test(line)) continue;
+      let slot = slotMap.get(curKey);
+      if (!slot) { slot = []; slotMap.set(curKey, slot); }
+      slot.push(line);
+    }
+  }
+  const result = [];
+  for (const [key, lines] of slotMap) result.push({ key, lines: dedupLines(lines) });
+  return result;
+}
+
+function mergeAll(allSections) {
+  rows = TEMPLATE.map(t => ({ id: uid(), key: t.key, level: t.level, header: t.header, lines: [] }));
+  rowMap = {};
+  for (const r of rows) rowMap[r.key] = r;
+  for (const ns of allSections) {
+    const row = rowMap[ns.key];
+    if (!row) continue;
+    row.lines.push(...ns.lines);
+  }
+  for (const r of rows) {
+    r.lines   = dedupLines(r.lines);
+    r.content = r.lines.join('\n').trim();
+  }
+}
+
+// ================================================================
+// XỬ LÝ CHÍNH
+// ================================================================
+const BATCH_SIZE = 10;
+
+async function processFiles() {
+  const totalLocal = files.length;
+  const totalDrive = driveFiles.length;
+  const total = totalLocal + totalDrive;
+
+  if (total === 0) { toast('Vui lòng tải lên hoặc chọn ít nhất 1 tệp .docx', 'err'); return; }
+
+  // Kiểm tra Drive cần token
+  if (totalDrive > 0 && !accessToken) {
+    toast('Cần đăng nhập Google Drive trước khi xử lý file từ Drive', 'err'); return;
+  }
+
+  setLoading(true, 'Đang đọc file...', '', 0);
+  const allSections = [];
+  let skipped = 0;
+  let done = 0;
+
+  try {
+    // ── Xử lý file LOCAL ────────────────────────────────────────
+    for (let b = 0; b < totalLocal; b += BATCH_SIZE) {
+      const batch = files.slice(b, b + BATCH_SIZE);
+      const results = await Promise.allSettled(batch.map(f => readDocx(f)));
+      for (let j = 0; j < batch.length; j++) {
+        done++;
+        const f   = batch[j];
+        const res = results[j];
+        setLoading(true, `Đang xử lý (${done}/${total})`, f.name, Math.round((done/total)*100));
+        if (res.status === 'rejected') { toast(`⚠️ Lỗi "${f.name}"`, 'wrn'); skipped++; continue; }
+        const text = cleanRaw(res.value);
+        if (!text.trim()) { skipped++; continue; }
+        allSections.push(...parseSections(text));
+      }
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    // ── Xử lý file DRIVE ────────────────────────────────────────
+    for (const df of driveFiles) {
+      done++;
+      setLoading(true, `Đang tải từ Drive (${done}/${total})`, df.name, Math.round((done/total)*100));
+      try {
+        const text = cleanRaw(await readDriveFile(df.id, df.name));
+        if (!text.trim()) { skipped++; continue; }
+        allSections.push(...parseSections(text));
+      } catch(e) {
+        toast(`⚠️ Lỗi đọc Drive "${df.name}": ${e.message}`, 'wrn'); skipped++;
+      }
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    if (!allSections.length) {
+      toast('Không tìm thấy nội dung phù hợp từ các file', 'err'); return;
+    }
+
+    setLoading(true, 'Đang tổng hợp & lọc...', '', 99);
+    mergeAll(allSections);
+    renderTable();
+    resultCard.style.display = 'block';
+    resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const filled = rows.filter(r => r.content).length;
+    const skipNote = skipped ? ` (bỏ qua ${skipped} file lỗi)` : '';
+    toast(`✅ Hoàn thành — ${filled}/${rows.length} mục có nội dung từ ${total - skipped} tệp${skipNote}`, 'ok');
+
+  } catch (err) {
+    console.error(err);
+    toast('❌ Lỗi: ' + err.message, 'err');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ================================================================
+// RENDER
+// ================================================================
+function renderTable() {
+  const frag = document.createDocumentFragment();
+  const filled = rows.filter(r => r.content).length;
+  statText.textContent = `${filled} / ${rows.length} mục có nội dung`;
+  srcLabel.textContent = `(${files.length + driveFiles.length} tệp nguồn)`;
+
+  rows.forEach((row, idx) => {
+    const lvClass  = ['lv0','lv1','lv2','lv3','lv4'][row.level] ?? 'lv0';
+    const lvLabel  = ['MĐ','I','1','-','–'][row.level] ?? '—';
+    const headCls  = row.level === 1 ? 'lv1-head' : row.level === 2 ? 'lv2-head' : row.level === 3 ? 'lv3-head' : '';
+    const hasContent = !!(row.content && row.content.trim());
+
+    const card = document.createElement('div');
+    card.className = 'row-card';
+    card.dataset.id  = row.id;
+    card.dataset.key = row.key || '';
+
+    card.innerHTML = `
+      <div class="row-card-head ${headCls}">
+        <span class="row-num">${idx + 1}</span>
+        <span class="lv-badge ${lvClass}">${lvLabel}</span>
+        <span class="row-title" contenteditable="true">${esc(row.header)}</span>
+        <button class="del-btn" title="Xóa dòng này" data-delid="${row.id}">✕</button>
+      </div>
+      <div class="row-card-body">
+        <div class="content-box ${hasContent ? 'has-content' : 'empty'}" contenteditable="true">${hasContent ? esc(row.content) : '(Chưa có nội dung từ các báo cáo)'}</div>
+      </div>`;
+
+    frag.appendChild(card);
+  });
+
+  tBody.innerHTML = '';
+  tBody.appendChild(frag);
+
+  tBody.onclick = e => {
+    const btn = e.target.closest('.del-btn');
+    if (!btn) return;
+    deleteRow(btn.dataset.delid);
+  };
+}
+
+function deleteRow(id) {
+  if (!confirm('Xóa dòng này?')) return;
+  rows = rows.filter(r => String(r.id) !== String(id));
+  renderTable();
+}
+
+function syncRows() {
+  const updated = [];
+  tBody.querySelectorAll('.row-card').forEach(card => {
+    const titleEl   = card.querySelector('.row-title');
+    const contentEl = card.querySelector('.content-box');
+    const txt = contentEl ? contentEl.innerText.trim() : '';
+    updated.push({
+      id:      card.dataset.id || uid(),
+      key:     card.dataset.key || '',
+      level:   guessLevel(titleEl ? titleEl.innerText : ''),
+      header:  titleEl ? titleEl.innerText.trim() : '',
+      content: txt === '(Chưa có nội dung từ các báo cáo)' ? '' : txt
+    });
+  });
+  if (updated.length) rows = updated;
+}
+
+function guessLevel(t) {
+  if (/^(I{1,3}|IV|V)\s*\./i.test(t)) return 1;
+  if (/^\d+\s*\./.test(t))             return 2;
+  if (/^[-–]\s/.test(t))               return 3;
+  return 2;
+}
+
+// ================================================================
+// XUẤT WORD
+// ================================================================
+async function exportWord() {
+  syncRows();
+  setLoading(true, 'Đang xuất file Word...', '', 50);
+  try {
+    const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
+    const today    = new Date().toLocaleDateString('vi-VN');
+    const children = [
+      new Paragraph({
+        children: [new TextRun({ text: 'TỔNG HỢP BÁO CÁO CÔNG TÁC HỘI VÀ DƯ LUẬN XÃ HỘI', bold: true, size: 32, allCaps: true })],
+        alignment: AlignmentType.CENTER, spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: `Ngày tổng hợp: ${today} — Nguồn: ${files.length + driveFiles.length} báo cáo`, size: 20, color: '64748b' })],
+        alignment: AlignmentType.CENTER, spacing: { after: 400 }
+      }),
+    ];
+
+    rows.forEach(item => {
+      const content = (item.content || '').trim();
+      const bold    = item.level <= 1;
+      const indent  = { 1: 0, 2: 360, 3: 720 }[item.level] ?? 360;
+      const size    = item.level === 1 ? 28 : item.level === 2 ? 26 : 24;
+
+      children.push(new Paragraph({
+        children: [new TextRun({ text: item.header, bold, size })],
+        spacing: { before: bold ? 240 : 120, after: 80 },
+        indent: { left: indent }
+      }));
+
+      if (content) {
+        content.split(/\n+/).forEach(para => {
+          if (!para.trim()) return;
+          children.push(new Paragraph({
+            children: [new TextRun({ text: para.trim(), size: 24 })],
+            alignment: AlignmentType.JUSTIFIED,
+            indent: { left: indent + 360 },
+            spacing: { after: 80 }
+          }));
+        });
+      }
+    });
+
+    const doc  = new Document({ sections: [{ properties: {}, children }] });
+    const blob = await Packer.toBlob(doc);
+    const ts   = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    saveAs(blob, `TongHop_CongTacHoi_${ts}.docx`);
+    toast('✅ Đã xuất file Word thành công!', 'ok');
+  } catch (e) {
+    console.error(e);
+    toast('❌ Lỗi xuất file: ' + e.message, 'err');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ================================================================
+// UTILITIES
+// ================================================================
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fmtSize(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+  return (b / 1048576).toFixed(1) + ' MB';
+}
+
+function setLoading(on, msg = '', sub = '', pct = null) {
+  overlay.style.display = on ? 'flex' : 'none';
+  if (msg) overlayMsg.textContent = msg;
+  overlayPrg.textContent = sub;
+  if (pct !== null) {
+    progressFill.style.width = pct + '%';
+    progressPct.textContent  = pct + '%';
+  }
+}
+
+function toast(msg, type = 'info') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icon = { ok: '✅', err: '⚠️', wrn: '⚡' }[type] || 'ℹ️';
+  t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3800);
+}
+
+// ================================================================
+// KHỞI ĐỘNG
+// ================================================================
+const loginOverlay = document.getElementById('loginOverlay');
+const loginBtn     = document.getElementById('loginBtn');
+
+loginBtn.addEventListener('click', () => { loginOverlay.style.display = 'none'; });
+window.addEventListener('load', () => {
+  loginBtn.focus();
+  // Kiểm tra hỗ trợ File System Access API
+  if (!window.showDirectoryPicker) {
+    const note = document.getElementById('folderApiNote');
+    if (note) note.style.display = 'block';
+  }
+  // Tự động khởi tạo Drive API từ config.js khi trang load
+  if (typeof DRIVE_CLIENT_ID !== 'undefined' && DRIVE_CLIENT_ID) {
+    // Chờ Google API scripts load xong rồi mới init
+    const waitGsi = setInterval(() => {
+      if (typeof google !== 'undefined' && typeof gapi !== 'undefined') {
+        clearInterval(waitGsi);
+        initDriveApi();
+      }
+    }, 200);
+  } else {
+    document.getElementById('configError').style.display = 'block';
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && loginOverlay.style.display !== 'none') loginBtn.click();
+});
+</script>
+</body>
+</html>
