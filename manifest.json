@@ -1,0 +1,56 @@
+{
+  "name": "TỔNG HỢP BÁO CÁO",
+  "short_name": "TH-BC",
+  "description": "Ứng dụng dùng tổng hợp báo cáo đa năng",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "background_color": "#b8d4f8",
+  "theme_color": "#a8edea",
+  "lang": "vi",
+  "categories": [
+    "utilities",
+    "community"
+  ],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icon-1000.png",
+      "sizes": "1000x1000",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mở App",
+      "short_name": "Mở",
+      "url": "/",
+      "icons": [
+        {
+          "src": "icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
