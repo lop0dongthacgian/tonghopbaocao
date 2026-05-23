@@ -1,0 +1,6 @@
+const VERSION    = 'v1.0.0';
+const CACHE_NAME = `app-cache-${VERSION}`;
+const PRECACHE_ASSETS = [ '/', '/index.html', '/manifest.json', '/pwa-core.js', '/icon-1000.png', '/icon-512.png', '/icon-192.png' ];
+self.addEventListener('install', (event) => { event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS)).then(() => self.skipWaiting())); });
+self.addEventListener('activate', (event) => { event.waitUntil(caches.keys().then((cacheNames) => Promise.all(cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name)))).then(() => self.clients.claim())); });
+self.addEventListener('fetch', (event) => { if (event.request.method !== 'GET') return; event.respondWith(fetch(event.request).then((networkResponse) => { if (networkResponse.ok) { const cloned = networkResponse.clone(); caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cloned)); } return networkResponse; }).catch(() => caches.match(event.request).then((cached) => cached || caches.match('/index.html')))); });
