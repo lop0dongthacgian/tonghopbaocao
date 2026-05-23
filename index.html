@@ -1,0 +1,2321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tổng Hợp Báo Cáo Đa Năng</title>
+<meta name="theme-color" content="#a8edea">
+<meta name="apple-mobile-web-app-title" content="Tổng Hợp Báo Cáo Đa Năng">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<script src="pwa-core.js"></script>
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://unpkg.com/docx@8.2.3/build/index.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --navy:    #1e3a8a;
+  --navy2:   #1e40af;
+  --blue:    #2563eb;
+  --blue-lt: #eff6ff;
+  --blue-bd: #bfdbfe;
+  --green:   #16a34a;
+  --green-lt:#f0fdf4;
+  --red:     #dc2626;
+  --red-lt:  #fef2f2;
+  --amber:   #d97706;
+  --amber-lt:#fffbeb;
+  --purple:  #7c3aed;
+  --purple-lt:#f5f3ff;
+  --text:    #0f172a;
+  --muted:   #64748b;
+  --border:  #e2e8f0;
+  --bg:      #f8fafc;
+  --white:   #ffffff;
+  --shadow:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.65;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%,   rgba(37,99,235,0.10) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 100%,  rgba(30,58,138,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 10% 80%,   rgba(37,99,235,0.07) 0%, transparent 60%),
+    var(--bg);
+  pointer-events: none;
+}
+.bg-pattern {
+  position: fixed; inset: 0; z-index: 0; opacity: 0.095;
+  background-image:
+    repeating-linear-gradient(45deg,  #1e3a8a 0, #1e3a8a 1.2px, transparent 0, transparent 50%),
+    repeating-linear-gradient(-45deg, #1e3a8a 0, #1e3a8a 1.2px, transparent 0, transparent 50%);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+/* ── HEADER ── */
+header {
+  background: none; color: #fff;
+  padding: 0rem 2rem 1.25rem;
+  text-align: center;
+  border-top: 3px solid var(--blue);
+  border-bottom: 3px solid var(--blue);
+  position: relative; z-index: 1;
+}
+header h1 { font-size: 1.8rem; line-height: 1.2; padding-top: 0.5rem; font-weight: 700; letter-spacing: .3px; text-shadow: 1px 1px 1px rgba(0,0,255,1), 0.5px 0.5px 2px rgba(255,255,255,1), 2px 2px 4px rgba(0,0,0,0.9); }
+header p  { color: #0000FF; font-size: 1rem; opacity: .8; margin-top: .3rem; text-shadow: 0.3px 0.3px 1px rgba(255,255,255,1), 1px 1px 1px rgba(0,0,0,0.9); }
+
+/* ── LAYOUT ── */
+.wrap {
+  max-width: 100%; margin: 1.75rem auto;
+  padding: 0 1.25rem; flex: 1;
+  display: flex; flex-direction: column; gap: 1.5rem;
+  width: 100%; position: relative; z-index: 1;
+}
+
+/* ── CARD ── */
+.card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+.card-header { padding: .85rem 1.4rem; border-bottom: 1px solid var(--border); background: #fafcff; display: flex; align-items: center; justify-content: center; gap: .6rem; }
+.card-header .icon { font-size: 1rem; }
+.card-header h2 { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.1px; color: var(--muted); }
+.card-body { padding: 1.4rem; }
+
+/* ── TAB SOURCE SELECTOR ── */
+.source-tabs {
+  display: flex; gap: .5rem; margin-bottom: 1.2rem;
+  border-bottom: 2px solid var(--border); padding-bottom: 0;
+}
+.tab-btn {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .55rem 1.1rem; border: none; background: none;
+  font-family: inherit; font-size: .82rem; font-weight: 600;
+  color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent;
+  margin-bottom: -2px; border-radius: 6px 6px 0 0; transition: all .2s;
+}
+.tab-btn:hover { color: var(--blue); background: var(--blue-lt); }
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); background: var(--blue-lt); }
+.tab-btn.drive-tab.active { color: var(--purple); border-bottom-color: var(--purple); background: var(--purple-lt); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── DROPZONE ── */
+.drop-zone {
+  border: 2px dashed var(--border); border-radius: 10px;
+  padding: 2.5rem 1.5rem; text-align: center;
+  cursor: pointer; transition: all .2s; background: var(--bg);
+}
+.drop-zone:hover, .drop-zone.over { border-color: var(--blue); background: var(--blue-lt); }
+.drop-zone .dz-icon { font-size: 2.4rem; display: block; margin-bottom: .7rem; }
+.drop-zone h3 { font-size: .95rem; font-weight: 600; margin-bottom: .35rem; }
+.drop-zone small { color: var(--muted); font-size: .8rem; }
+.fmt-pill { display: inline-block; background: var(--navy); color: #fff; font-size: .65rem; font-weight: 700; padding: .15rem .55rem; border-radius: 20px; margin-top: .55rem; }
+input[type="file"] { display: none; }
+
+/* ── FOLDER SELECT BTN ── */
+.folder-actions {
+  display: flex;
+  gap: .7rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.folder-actions {
+  display: flex;
+  gap: .7rem;
+}
+
+.folder-actions .btn-folder {
+  flex: 1;
+  min-width: 0;
+  height: 96px;           /* ép cao bằng nhau */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.3;
+}
+.btn-folder {
+  display: inline-flex; align-items: center; gap: .45rem;
+  background: var(--blue-lt); border: 1.5px dashed var(--blue);
+  color: var(--blue); font-size: .85rem; font-weight: 600;
+  padding: .65rem 1.3rem; border-radius: 8px; cursor: pointer;
+  font-family: inherit; transition: all .2s;
+}
+.btn-folder:hover { background: var(--blue); color: #fff; border-style: solid; }
+.btn-folder-purple {
+  background: var(--purple-lt); border-color: var(--purple); color: var(--purple);
+}
+.btn-folder-purple:hover { background: var(--purple); color: #fff; }
+
+/* ── CONFIG ERROR BOX ── */
+.config-error { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: .85rem 1rem; font-size: .82rem; color: #991b1b; }
+.config-error code { background: rgba(153,27,27,.1); padding: .1rem .3rem; border-radius: 3px; font-family: monospace; }
+
+/* ── DRIVE URL PANEL ── */
+.drive-url-panel { 
+  background: var(--purple-lt); 
+  border: 1px solid #ddd6fe; 
+  border-radius: 10px; 
+  padding: 1.1rem 1.2rem; 
+}
+.drive-url-label { 
+  display: block; 
+  font-size: .82rem; 
+  font-weight: 700; 
+  color: var(--purple); 
+  margin-bottom: .55rem; 
+  text-align: center;
+}
+.drive-url-row { 
+  display: flex; 
+  flex-direction: column;
+  gap: .75rem;
+  align-items: center;
+}
+.drive-url-input { 
+  width: 100%;
+  padding: .55rem .85rem; 
+  border: 1.5px solid #ddd6fe; 
+  border-radius: 8px; 
+  font-family: inherit; 
+  font-size: .83rem; 
+  background: var(--white); 
+  color: var(--text); 
+  outline: none; 
+  transition: border-color .2s; 
+  box-sizing: border-box;
+}
+.drive-url-input:focus { 
+  border-color: var(--purple); 
+}
+.btn-drive-fetch { 
+  background: var(--purple); 
+  color: #fff; 
+  border: none; 
+  border-radius: 8px; 
+  padding: .55rem 1.5rem;
+  font-size: .9rem;
+  font-weight: 700; 
+  cursor: pointer; 
+  font-family: inherit; 
+  min-width: 140px;
+  transition: background .2s; 
+}
+.btn-drive-fetch:hover { 
+  background: #6d28d9; 
+}
+.drive-url-hint { 
+  font-size: .76rem; 
+  color: var(--muted); 
+  margin-top: .8rem;
+  line-height: 1.6; 
+  text-align: center;
+}
+.drive-result-info { background: var(--white); border: 1px solid #ddd6fe; border-radius: 7px; padding: .6rem .9rem; font-size: .82rem; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.drive-result-info .ok-badge { background: var(--green-lt); color: var(--green); border: 1px solid #bbf7d0; border-radius: 20px; padding: .15rem .65rem; font-size: .74rem; font-weight: 700; }
+
+/* ── FOLDER PICKER (chọn tháng) ── */
+.folder-picker-header {
+  font-size: .82rem; font-weight: 700; color: var(--purple);
+  margin-bottom: .65rem; padding: .5rem .75rem;
+  background: var(--purple-lt); border-radius: 8px;
+  border: 1px solid #ddd6fe;
+}
+.folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: .55rem;
+}
+.folder-card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: .7rem .9rem;
+  cursor: pointer; transition: all .18s;
+  display: flex; flex-direction: column; gap: .25rem;
+  position: relative; overflow: hidden;
+}
+.folder-card:hover { border-color: var(--purple); background: var(--purple-lt); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.folder-card.selected { border-color: var(--purple); background: var(--purple-lt); box-shadow: 0 0 0 2px rgba(124,58,237,.25); }
+.folder-card.loading { opacity: .65; pointer-events: none; }
+.folder-card-year { font-size: .68rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.folder-card-name { font-size: .92rem; font-weight: 700; color: var(--text); }
+.folder-card-count { font-size: .75rem; color: var(--purple); font-weight: 600; }
+.folder-card-badge {
+  position: absolute; top: .4rem; right: .4rem;
+  background: var(--purple); color: #fff; font-size: .6rem;
+  font-weight: 700; padding: .1rem .35rem; border-radius: 20px;
+  display: none;
+}
+.folder-card.selected .folder-card-badge { display: inline-block; }
+.folder-card-spin {
+  display: none; width: 14px; height: 14px;
+  border: 2px solid rgba(124,58,237,.2); border-top-color: var(--purple);
+  border-radius: 50%; animation: spin .6s linear infinite;
+  position: absolute; top: .55rem; right: .55rem;
+}
+.folder-card.loading .folder-card-spin { display: inline-block; }
+
+/* ── FILE LIST ── */
+.file-list { display: flex; flex-direction: column; gap: .3rem; margin-top: .9rem; max-height: 260px; overflow-y: auto; }
+.chip { display: flex; align-items: center; gap: .55rem; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: .45rem .8rem; font-size: .82rem; transition: background .15s; }
+.chip:hover { background: var(--blue-lt); }
+.chip-ext { background: var(--navy2); color: #fff; font-size: .6rem; font-weight: 700; padding: .12rem .38rem; border-radius: 3px; flex-shrink: 0; }
+.chip-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip-size { font-size: .75rem; color: var(--muted); flex-shrink: 0; }
+.chip-del { background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: .9rem; padding: 0 .1rem; }
+.chip-del:hover { color: var(--red); }
+
+/* ── ACTION BAR ── */
+.action-bar { display: flex; justify-content: center; align-items: center; margin-top: .9rem; padding-top: .75rem; border-top: 1px solid var(--border); flex-wrap: wrap; gap: .5rem; }
+.file-count { font-size: .78rem; color: var(--muted); }
+.btn-clear { background: none; border: 1px solid var(--border); color: var(--red); font-size: .78rem; padding: .35rem 1rem; border-radius: 20px; cursor: pointer; transition: all .2s; font-family: inherit; }
+.btn-clear:hover { background: var(--red-lt); border-color: var(--red); }
+
+/* ── PROCESS BUTTON ── */
+.process-wrap { margin-top: 1.2rem; display: flex; justify-content: center; }
+.btn-process {
+  display: inline-flex; align-items: center; gap: .55rem;
+  background: linear-gradient(135deg, var(--navy2) 0%, var(--blue) 100%);
+  color: #fff; border: none; border-radius: 8px;
+  padding: .8rem 2.2rem; font-size: .95rem; font-weight: 600;
+  cursor: pointer; transition: all .2s; font-family: inherit;
+  box-shadow: 0 2px 8px rgba(30,64,175,.3); min-width: 240px; justify-content: center;
+}
+.btn-process:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(30,64,175,.4); }
+.btn-process:active { transform: scale(.98); }
+
+/* ── RESULT TOOLBAR ── */
+.result-toolbar { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: .7rem; padding-bottom: .9rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; flex-direction: column; }
+.stat-badge { background: var(--blue-lt); border: 1px solid var(--blue-bd); border-radius: 20px; padding: .2rem .7rem; font-size: .75rem; color: var(--navy2); font-weight: 600; }
+.toolbar-right { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; align-items: center; }
+
+/* ── BUTTONS ── */
+.btn { padding: .5rem 1.1rem; border: none; border-radius: 6px; font-size: .82rem; font-weight: 500; cursor: pointer; transition: all .15s; font-family: inherit; display: inline-flex; align-items: center; gap: .35rem; }
+.btn:active { transform: scale(.97); }
+.btn-navy  { background: var(--navy); color: #fff; }
+.btn-navy:hover { background: var(--navy2); }
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { background: #15803d; }
+.btn-outline { background: none; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
+
+/* ── RESULT SECTION CARDS ── */
+.sections-container { display: flex; flex-direction: column; gap: .65rem; }
+
+.sec-card {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--white);
+  transition: box-shadow .15s;
+}
+.sec-card:hover { box-shadow: var(--shadow-md); }
+.sec-card.level-1 { border-left: 2px solid var(--navy); }
+.sec-card.level-2 { border-left: 2px solid var(--blue); }
+.sec-card.level-3 { border-left: 2px solid var(--purple); }
+
+.sec-header {
+  display: flex; align-items: center; gap: .55rem;
+  padding: .65rem .9rem;
+  cursor: pointer; user-select: none;
+  transition: background .15s;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border);
+}
+.sec-header:hover { background: var(--blue-lt); }
+
+.level-1 .sec-header { background: var(--blue-lt); }
+.level-2 .sec-header { background: var(--green-lt); }
+.level-3 .sec-header { background: var(--amber-lt); }
+
+.sec-level-badge {
+  font-size: .6rem; font-weight: 700; padding: .1rem .38rem;
+  border-radius: 3px; flex-shrink: 0; text-transform: uppercase; letter-spacing: .5px;
+}
+.level-1 .sec-level-badge { background: var(--navy); color: #fff; }
+.level-2 .sec-level-badge { background: var(--blue-bd); color: var(--navy); }
+.level-3 .sec-level-badge { background: #fde68a; color: #92400e; }
+
+.sec-title-input {
+  flex: 1; font-size: .87rem; font-weight: 600; color: var(--text);
+  background: none; border: none; outline: none;
+  font-family: inherit; cursor: pointer; padding: .1rem .25rem; border-radius: 3px;
+}
+.sec-title-input:focus { background: rgba(37,99,235,.07); outline: 1px solid var(--blue); cursor: text; }
+
+.level-1 .sec-title-input { font-weight: 700; }
+
+.sec-meta { display: flex; align-items: center; gap: .5rem; flex-shrink: 0; }
+.source-badge {
+  font-size: .72rem; color: var(--muted); background: rgba(0,0,0,.05);
+  padding: .15rem .55rem; border-radius: 4px; cursor: pointer;
+}
+.source-badge:hover { background: var(--blue-lt); color: var(--blue); }
+.chevron { color: var(--muted); font-size: .8rem; transition: transform .2s; }
+.sec-card.collapsed .chevron { transform: rotate(-90deg); }
+.del-sec-btn { background: none; border: none; color: #d1d5db; cursor: pointer; font-size: .9rem; padding: .1rem .2rem; }
+.del-sec-btn:hover { color: var(--red); }
+
+.sec-body { padding: .6rem .6rem; }
+.sec-card.collapsed .sec-body { display: none; }
+
+.sec-body textarea {
+  width: 100%; min-height: 90px;
+  border: 1.5px solid var(--border); border-radius: 6px;
+  padding: .6rem .75rem;
+  font-family: inherit; font-size: .85rem; color: var(--text);
+  resize: vertical; outline: none; background: var(--bg);
+  line-height: 1.7; transition: border-color .2s;
+  box-sizing: border-box;
+}
+.sec-body textarea:focus { border-color: var(--blue); background: #fff; }
+.sec-body textarea.empty { color: var(--muted); font-style: italic; }
+
+.sec-body-actions { display: flex; gap: .5rem; margin-top: .5rem; }
+
+/* ── PROGRESS BAR ── */
+.progress-wrap { width: 260px; margin-top: .85rem; }
+.progress-bar-track { background: rgba(255,255,255,.18); border-radius: 99px; height: 6px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width .25s; width: 0%; }
+.progress-pct { color: rgba(255,255,255,.7); font-size: .72rem; margin-top: .3rem; text-align: center; }
+
+/* ── OVERLAY ── */
+#overlay { position: fixed; inset: 0; background: rgba(15,23,42,.88); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+.spin { width: 42px; height: 42px; border: 4px solid rgba(255,255,255,.15); border-top-color: var(--blue); border-radius: 50%; animation: spin .75s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#overlayMsg { color: #fff; margin-top: 1rem; font-size: .88rem; }
+.overlay-sub { color: rgba(255,255,255,.6); font-size: .76rem; margin-top: .35rem; max-width: 320px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── TOASTS ── */
+#toasts { position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 10000; display: flex; flex-direction: column; gap: .4rem; }
+.toast { background: var(--white); border-radius: 8px; padding: .65rem 1rem; font-size: .81rem; box-shadow: 0 4px 16px rgba(0,0,0,.12); border-left: 2px solid var(--blue); animation: toastIn .2s ease; display: flex; align-items: center; gap: .45rem; max-width: 340px; transition: opacity .3s; }
+.toast.ok  { border-left-color: var(--green); }
+.toast.err { border-left-color: var(--red); }
+.toast.wrn { border-left-color: var(--amber); }
+@keyframes toastIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ── FOOTER ── */
+footer { background: var(--navy); color: white; text-align: center; padding: .9rem 1rem; font-size: 0.8rem; margin-top: 1rem; position: relative; z-index: 1; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--muted); }
+.empty-state .es-icon { font-size: 2.5rem; margin-bottom: .75rem; display: block; }
+
+/* ── INFO BOX ── */
+.info-box { background: var(--blue-lt); border: 1px solid var(--blue-bd); border-radius: 8px; padding: .75rem 1rem; font-size: .8rem; color: var(--navy); line-height: 1.6; }
+.info-box b { font-weight: 700; }
+.info-box code { background: rgba(37,99,235,.12); padding: .1rem .3rem; border-radius: 3px; font-family: monospace; font-size: .78rem; }
+
+/* ── DÒNG TRÙNG (mờ, gạch ngang) ── */
+.dupe-line {
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-style: italic;
+  opacity: 0.55;
+  display: block;
+  font-size: .82em;
+}
+
+/* ── DÒNG TRÙNG trong preview: mờ + nút X ── */
+.dupe-preview-row {
+  display: flex;
+  align-items: baseline;
+  gap: .35rem;
+  opacity: 0.78;
+  font-style: italic;
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-size: .88em;
+}
+.dupe-preview-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dupe-restore-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #2563eb;           /* màu xanh dương dễ nhìn */
+  font-size: 1.4rem;        /* to hơn hẳn */
+  font-weight: normal;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s, transform 0.15s;
+}
+
+.dupe-restore-btn:hover {
+  color: #1d4ed8;           /* đậm hơn khi hover */
+  transform: scale(1.15);   /* phóng to nhẹ để nổi bật */
+}
+
+.dupe-restore-btn:active {
+  transform: scale(0.95);
+}
+
+
+
+/* ── NÚT XÓA TẤT CẢ DÒNG TRÙNG ── */
+.btn-remove-dupes {
+  background: none;
+  border: 1px solid #fca5a5;
+  color: var(--red);
+  font-size: .75rem;
+  padding: .3rem .8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all .18s;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+}
+.btn-remove-dupes:hover {
+  background: var(--red-lt);
+  border-color: var(--red);
+}
+.content-preview {
+  width: 100%; min-height: 90px;
+  border: 1.5px solid var(--border); border-radius: 6px;
+  padding: .6rem .75rem;
+  font-family: inherit; font-size: .85rem; color: var(--text);
+  background: var(--bg); line-height: 1.85;
+  white-space: pre-wrap; word-break: break-word;
+  outline: none; box-sizing: border-box;
+}
+.content-preview:empty::before { content: attr(data-placeholder); color: var(--muted); font-style: italic; }
+.restore-btn {
+  display: inline-flex; align-items: center; gap: .35rem;
+  background: var(--amber-lt); border: 1px solid #fcd34d;
+  color: #92400e; font-size: .75rem; font-weight: 600;
+  padding: .3rem .8rem; border-radius: 6px; cursor: pointer;
+  font-family: inherit; transition: all .18s;
+}
+.restore-btn:hover { background: #fef3c7; border-color: var(--amber); }
+.dupe-badge {
+  display: inline-flex; align-items: center; gap: .3rem;
+  background: #fef3c7; border: 1px solid #fcd34d;
+  color: #92400e; font-size: .72rem; font-weight: 700;
+  padding: .12rem .55rem; border-radius: 20px;
+}
+
+/* ── Per-line dupe row ── */
+.dupe-line-row {
+  display: flex; align-items: baseline; gap: .3rem;
+}
+.dupe-line-actions {
+  display: inline-flex; gap: .18rem; flex-shrink: 0;
+}
+.dupe-line-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: .7rem; padding: .05rem .28rem; border-radius: 3px;
+  line-height: 1; transition: background .15s;
+}
+.dupe-line-btn.restore { color: var(--amber); }
+.dupe-line-btn.restore:hover { background: #fef3c7; }
+.dupe-line-btn.del { color: var(--red); }
+.dupe-line-btn.del:hover { background: var(--red-lt); }
+
+/* ── STATS BAR ── */
+.stats-bar { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: .5rem; }
+.stat-card-sm {
+  flex: 1; min-width: 100px;
+  background: var(--white); border-radius: 8px; padding: .75rem 1rem;
+  border: 1px solid var(--border); box-shadow: var(--shadow); text-align: center;
+}
+.stat-num-sm { font-size: 1.4rem; font-weight: 800; color: var(--navy); line-height: 1; margin-bottom: .25rem; }
+.stat-num-sm.blue { color: var(--blue); }
+.stat-num-sm.green { color: var(--green); }
+.stat-num-sm.orange { color: var(--amber); }
+.stat-label-sm { font-size: .72rem; color: var(--muted); font-weight: 500; }
+
+/* ── MERGE SUGGESTION ── */
+.merge-suggestion {
+  background: var(--amber-lt); border: 1.5px solid #fcd34d;
+  border-radius: 8px; padding: .7rem 1rem; margin-bottom: .5rem;
+  display: flex; align-items: center; gap: .75rem;
+  font-size: .8rem; color: var(--text);
+}
+.badge-blue { display: inline-block; background: var(--blue-lt); color: var(--blue); border-radius: 20px; padding: .1rem .5rem; font-size: .72rem; font-weight: 700; }
+
+/* ── SOURCE MODAL ── */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-bg.active { display: flex; }
+.modal { background: var(--white); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.22); width: 100%; max-width: 520px; max-height: 80vh; display: flex; flex-direction: column; }
+.modal-header { padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.modal-header h2 { font-size: 1rem; font-weight: 700; color: var(--navy); }
+.modal-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--muted); }
+.modal-close:hover { color: var(--red); }
+.modal-body { padding: 1rem 1.4rem; overflow-y: auto; flex: 1; }
+.source-item { padding: .6rem .9rem; border-radius: 6px; border: 1px solid var(--border); margin-bottom: .5rem; background: var(--bg); }
+.source-item-name { font-size: .82rem; font-weight: 700; color: var(--navy); }
+
+/* ================= MÀN HÌNH KHỞI ĐỘNG ================= */
+#loginOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 15% 20%,  rgba(120,210,255,0.55), transparent 38%),
+    radial-gradient(circle at 85% 15%,  rgba(0,200,255,0.30),   transparent 35%),
+    radial-gradient(circle at 70% 80%,  rgba(100,180,255,0.38), transparent 40%),
+    radial-gradient(circle at 20% 80%,  rgba(160,230,255,0.30), transparent 36%),
+    radial-gradient(circle at 50% 50%,  rgba(200,240,255,0.18), transparent 55%),
+    linear-gradient(160deg, #d0efff 0%, #b8e4ff 25%, #caf0ff 55%, #daf5ff 80%, #eafaff 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 390px;
+  background: rgba(255,255,255,0.52);
+  border: 1px solid rgba(255,255,255,0.70);
+  border-radius: 28px;
+  padding: 38px 28px;
+  text-align: center;
+  box-shadow:
+    0 10px 40px rgba(13,71,161,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  box-sizing: border-box;
+  animation: loginPop .35s ease;
+}
+
+@keyframes loginPop {
+  from { transform: scale(.9); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+
+.login-logo {
+  width:150px !important;
+  height:150px !important;
+  object-fit: contain;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 6px 16px rgba(0,100,200,0.20));
+}
+
+.login-title {
+  color: #0d47a1;
+  font-size: 25px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: .5px;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+
+.login-subtitle {
+  color: #3d6b92;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+#loginBtn {
+  width: 100%;
+  height: 56px;
+  border: none;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .2s, opacity .2s;
+  box-shadow: none;
+}
+
+#loginBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,114,255,.45);
+}
+
+#loginBtn:active { transform: scale(.98); }
+
+@media (max-width: 480px) {
+  .login-card { padding: 30px 20px; border-radius: 22px; }
+  .login-logo { width: 110px; height: 110px; }
+  .login-title { font-size: 24px; }
+  .login-subtitle { font-size: 13px; }
+  #loginBtn { height: 50px; font-size: 15px; }
+}
+
+/* ================= TRANG KẾT QUẢ FULLSCREEN ================= */
+#resultPage {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  background: #fff;
+  flex-direction: column;
+  overflow: hidden;
+}
+#resultPage.active {
+  display: flex;
+}
+#resultPageBar {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .55rem .75rem;
+  background: var(--navy);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+#btnBackToMain {
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.3);
+  color: #fff;
+  font-family: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+  padding: .4rem .9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+#btnBackToMain:hover { background: rgba(255,255,255,.28); }
+#resultPageStats {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: .78rem;
+  color: rgba(255,255,255,.85);
+}
+#resultPageStats span { white-space: nowrap; }
+#resultPageActions {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+.rp-btn {
+  background: rgba(255,255,255,.13);
+  border: 1px solid rgba(255,255,255,.25);
+  color: #fff;
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 600;
+  padding: .38rem .75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.rp-btn:hover { background: rgba(255,255,255,.25); }
+.rp-btn-green { background: var(--green) !important; border-color: var(--green) !important; }
+.rp-btn-green:hover { background: #15803d !important; }
+#resultPageStatsBar {
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: #f8fafc;
+}
+.rp-stat {
+  flex: 1;
+  text-align: center;
+  padding: .4rem .5rem;
+  border-right: 1px solid var(--border);
+}
+.rp-stat:last-child { border-right: none; }
+.rp-stat-num { font-size: 1.1rem; font-weight: 800; color: var(--navy); line-height: 1.1; }
+.rp-stat-num.blue { color: var(--blue); }
+.rp-stat-num.green { color: var(--green); }
+.rp-stat-num.orange { color: var(--amber); }
+.rp-stat-lbl { font-size: .65rem; color: var(--muted); }
+#rpMergeSuggestions { flex-shrink: 0; padding: 0 .5rem; }
+#rpBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: .5rem .5rem 3rem;
+  display: block;
+}
+#rpBody .sec-card + .sec-card {
+  margin-top: .4rem;
+}
+/* Section cards bên trong result page — bỏ viền card ngoài, bỏ nền */
+#rpBody .sec-card {
+  border-radius: 6px;
+  border: none;
+  border-left: 1px solid var(--border);
+  background: transparent;
+  box-shadow: none;
+}
+#rpBody .sec-card:hover { box-shadow: none; }
+#rpBody .sec-card.level-1 { border-left: 2px solid var(--navy); }
+#rpBody .sec-card.level-2 { border-left: 1px solid var(--blue); }
+#rpBody .sec-card.level-3 { border-left: 1px solid var(--purple); }
+#rpBody .sec-header {
+  padding: .5rem .65rem;
+  border-bottom: 1px solid var(--border);
+  border-radius: 4px 4px 0 0;
+}
+#rpBody .sec-body {
+  padding: .4rem .5rem;
+}
+#rpBody .content-preview,
+#rpBody textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: .88rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+  padding: .5rem .6rem;
+}
+#rpBody textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.7;
+  outline: none;
+}
+#rpBody textarea:focus { border-color: var(--blue); }
+
+</style>
+</head>
+<body>
+<!-- ===== MÀN HÌNH KHỞI ĐỘNG ===== -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <img src="icon.png" class="login-logo" alt="Logo">
+    <div class="login-title">
+      TỔNG HỢP BÁO CÁO <br> ĐA NĂNG
+    </div>
+    <button id="loginBtn">🚀 Truy cập ứng dụng</button>
+  </div>
+</div>
+
+<div class="bg-layer"></div>
+<div class="bg-pattern"></div>
+
+<header>
+  <h1>TỔNG HỢP BÁO CÁO <br> ĐA NĂNG
+</header>
+
+<div class="wrap">
+
+  <!-- UPLOAD CARD -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">📂</span>
+      <h2>Chọn nguồn tài liệu</h2>
+    </div>
+    <div class="card-body">
+
+      <!-- TABS -->
+      <div class="source-tabs">
+        <button class="tab-btn active" onclick="switchTab('local')" id="tab-local">
+          💻 Máy tính
+        </button>
+        <button class="tab-btn drive-tab" onclick="switchTab('drive')" id="tab-drive">
+          ☁️ Google Drive
+        </button>
+      </div>
+
+      <!-- ===== TAB LOCAL ===== -->
+      <div class="tab-panel active" id="panel-local">
+
+        <div class="folder-actions" id="folderActions">
+          <button class="btn-folder" onclick="pickFolder()">
+            📁 Chọn thư mục (toàn bộ .docx)
+          </button>
+          <button class="btn-folder" onclick="document.getElementById('fileInput').click()">
+            📄 Chọn từng file
+          </button>
+        </div>
+        <div id="folderApiNote" style="display:none;" class="info-box" style="margin-bottom:.8rem;">
+          ⚠️ Trình duyệt chưa hỗ trợ chọn thư mục. Hãy dùng <b>kéo-thả thư mục</b> hoặc chọn nhiều file cùng lúc.
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+          <span class="dz-icon">📁</span>
+          <h3>Kéo thả thư mục hoặc nhiều file .docx vào đây</h3>
+          <small>Hỗ trợ kéo cả thư mục — khuyến nghị dưới 200 tệp</small><br>
+          <span class="fmt-pill">.docx</span>
+        </div>
+        <input type="file" id="fileInput" multiple accept=".docx">
+
+        <div class="file-list" id="fileList"></div>
+
+        <div class="action-bar">
+          <span class="file-count" id="countLabel"></span>
+          <button class="btn-clear" onclick="clearAll()">🗑️ Xóa tất cả</button>
+        </div>
+      </div>
+
+      <!-- ===== TAB DRIVE ===== -->
+      <div class="tab-panel" id="panel-drive">
+
+        <div class="drive-url-panel">
+          <label class="drive-url-label">🔗 Link thư mục Google Drive <span style="font-weight:400;color:var(--muted);">(tuỳ chọn)</span></label>
+          <div class="drive-url-row">
+            <input type="text" id="driveFolderUrl" class="drive-url-input"
+              placeholder="Dán link thư mục Google Drive… (hoặc để trống nếu đã cấu hình trong config.js)">
+            <button class="btn-drive-fetch" id="btnFetchFolders" onclick="fetchFolderList()">🔍 Xem thư mục</button>
+          </div>
+          <div class="drive-url-hint">
+            • Link thư mục mặc định đã được cấu hình sẵn trong <b>config.js</b><br>
+            • Để đổi thư mục khác: dán link mới vào ô trên rồi nhấn <b>"Xem thư mục"</b><br>
+            • Chọn tháng muốn tổng hợp → nhấn để tải & đọc file
+          </div>
+
+          <div class="config-error" id="configError" style="display:none; margin-top:.7rem;">
+            ⚠️ Chưa cấu hình <code>APPS_SCRIPT_URL</code> trong <code>config.js</code>.
+          </div>
+        </div>
+
+        <!-- BƯỚC 1: Chọn tháng -->
+        <div id="folderPickerPanel" style="display:none; margin-top:.9rem;">
+          <div class="folder-picker-header" id="folderPickerHeader"></div>
+          <div class="folder-grid" id="folderGrid"></div>
+        </div>
+
+        <!-- BƯỚC 2: Kết quả sau khi đọc tháng đã chọn -->
+        <div id="driveResult" style="display:none; margin-top:.9rem;">
+          <div class="drive-result-info" id="driveResultInfo"></div>
+          <div class="file-list" id="driveFileChips" style="margin-top:.5rem;"></div>
+        </div>
+
+      </div><!-- end panel-drive -->
+
+    </div><!-- end card-body -->
+
+    <!-- PROCESS BUTTON (chung cho cả 2 tab) -->
+    <div class="process-wrap" style="padding: 0 1.4rem 1.4rem;">
+      <button class="btn-process" onclick="processFiles()">
+        ⚡ Tổng hợp báo cáo
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULT CARD -->
+  <div class="card" id="resultCard" style="display:none;">
+    <div class="card-header">
+      <span class="icon">📋</span>
+      <h2>Kết quả tổng hợp</h2>
+    </div>
+    <div class="card-body">
+      <div class="result-toolbar">
+        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+          <span class="stat-badge" id="statText"></span>
+          <span style="font-size:.76rem;color:var(--muted);" id="srcLabel"></span>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-outline btn-sm" onclick="expandAll()">📂 Mở tất cả</button>
+          <button class="btn btn-outline btn-sm" onclick="collapseAll()">📁 Thu tất cả</button>
+          <button class="btn btn-green" onclick="exportWord()">📤 Xuất Word</button>
+        </div>
+      </div>
+
+      <!-- Thống kê -->
+      <div class="stats-bar" id="statsBar" style="display:none;margin-bottom:1rem;">
+        <div class="stat-card-sm"><div class="stat-num-sm blue" id="statFiles">0</div><div class="stat-label-sm">File đã đọc</div></div>
+        <div class="stat-card-sm"><div class="stat-num-sm" id="statSections">0</div><div class="stat-label-sm">Mục tổng hợp</div></div>
+        <div class="stat-card-sm"><div class="stat-num-sm green" id="statLines">0</div><div class="stat-label-sm">Dòng nội dung</div></div>
+        <div class="stat-card-sm"><div class="stat-num-sm orange" id="statDupes">0</div><div class="stat-label-sm">Dòng trùng bỏ</div></div>
+      </div>
+
+      <!-- Gợi ý gộp -->
+      <div id="mergeSuggestions"></div>
+
+      <!-- Danh sách section -->
+      <div class="sections-container" id="tBody">
+        <div class="empty-state">
+          <span class="es-icon">📄</span>
+          Chưa có kết quả
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>ỨNG DỤNG TỔNG HỢP VĂN BẢN THÔNG MINH</footer>
+
+<div id="overlay">
+  <div class="spin"></div>
+  <span id="overlayMsg">Đang xử lý...</span>
+  <span class="overlay-sub" id="overlayProgress"></span>
+  <div class="progress-wrap">
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="progress-pct" id="progressPct"></div>
+  </div>
+</div>
+<div id="toasts"></div>
+
+<!-- ===== TRANG KẾT QUẢ FULLSCREEN ===== -->
+<div id="resultPage">
+  <div id="resultPageBar">
+    <button id="btnBackToMain" onclick="closeResultPage()">← Quay lại</button>
+    <div id="resultPageStats">
+      <span id="rpStatText"></span>
+      <span id="rpSrcLabel"></span>
+    </div>
+    <div id="resultPageActions">
+      <button class="rp-btn" onclick="expandAll()">📂 Mở tất cả</button>
+      <button class="rp-btn" onclick="collapseAll()">📁 Thu tất cả</button>
+      <button class="rp-btn rp-btn-green" onclick="exportWord()">📤 Xuất Word</button>
+    </div>
+  </div>
+  <div id="resultPageStatsBar">
+    <div class="rp-stat"><div class="rp-stat-num blue" id="rpStatFiles">0</div><div class="rp-stat-lbl">File đã đọc</div></div>
+    <div class="rp-stat"><div class="rp-stat-num" id="rpStatSections">0</div><div class="rp-stat-lbl">Mục tổng hợp</div></div>
+    <div class="rp-stat"><div class="rp-stat-num green" id="rpStatLines">0</div><div class="rp-stat-lbl">Dòng nội dung</div></div>
+    <div class="rp-stat"><div class="rp-stat-num orange" id="rpStatDupes">0</div><div class="rp-stat-lbl">Dòng trùng</div></div>
+  </div>
+  <div id="rpMergeSuggestions"></div>
+  <div id="rpBody"></div>
+</div>
+
+<!-- Source Modal -->
+<div class="modal-bg" id="sourceModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📂 Nguồn dữ liệu</h2>
+      <button class="modal-close" onclick="closeSourceModal()">×</button>
+    </div>
+    <div class="modal-body" id="sourceModalBody"></div>
+  </div>
+</div>
+<script>
+
+let files           = [];      // File objects từ máy tính
+let driveItems      = [];      // [{name, path, html, source:'drive'}] từ Drive
+let synthesizedTree = [];      // kết quả tổng hợp cuối
+let debugLog        = [];      // debug log entries
+let activeTab       = 'local';
+
+// ── DOM refs ─────────────────────────────────────────────────────
+const dropZone    = document.getElementById('dropZone');
+const fileInput   = document.getElementById('fileInput');
+const fileList    = document.getElementById('fileList');
+const resultCard  = document.getElementById('resultCard');
+const tBody       = document.getElementById('tBody');
+const statText    = document.getElementById('statText');
+const srcLabel    = document.getElementById('srcLabel');
+const countLabel  = document.getElementById('countLabel');
+const overlay     = document.getElementById('overlay');
+const overlayMsg  = document.getElementById('overlayMsg');
+const overlayPrg  = document.getElementById('overlayProgress');
+const progressFill= document.getElementById('progressFill');
+const progressPct = document.getElementById('progressPct');
+
+// ================================================================
+// MODULE: TAB
+// ================================================================
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  if (tab === 'drive') {
+    const input = document.getElementById('driveFolderUrl');
+    if (typeof DEFAULT_DRIVE_FOLDER !== 'undefined' && DEFAULT_DRIVE_FOLDER && !input.value.trim())
+      input.value = DEFAULT_DRIVE_FOLDER;
+  }
+}
+
+// ================================================================
+// MODULE: LOCAL FILE HANDLING
+// ================================================================
+async function pickFolder() {
+  if (window.showDirectoryPicker) {
+    try {
+      const dirHandle = await window.showDirectoryPicker({ mode: 'read' });
+      setLoading(true, 'Đang đọc thư mục...', dirHandle.name, 0);
+      const collected = [];
+      await collectDocxFromDir(dirHandle, collected);
+      setLoading(false);
+      if (!collected.length) { toast('Không tìm thấy file .docx trong thư mục này', 'wrn'); return; }
+      addFiles(collected);
+      toast(`✅ Đã tìm thấy ${collected.length} file .docx`, 'ok');
+    } catch (e) {
+      setLoading(false);
+      if (e.name !== 'AbortError') toast('Lỗi đọc thư mục: ' + e.message, 'err');
+    }
+  } else {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.multiple = true; inp.webkitdirectory = true; inp.accept = '.docx';
+    inp.onchange = () => { addFiles(Array.from(inp.files).filter(f => f.name.toLowerCase().endsWith('.docx'))); };
+    inp.click();
+  }
+}
+
+async function collectDocxFromDir(dirHandle, out) {
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.docx')) {
+      out.push(await entry.getFile());
+    } else if (entry.kind === 'directory') {
+      await collectDocxFromDir(entry, out);
+    }
+  }
+}
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', async e => {
+  e.preventDefault(); dropZone.classList.remove('over');
+  const items = Array.from(e.dataTransfer.items || []);
+  const hasDir = items.some(it => it.webkitGetAsEntry && it.webkitGetAsEntry()?.isDirectory);
+  if (hasDir) {
+    setLoading(true, 'Đang đọc thư mục kéo-thả...', '', 0);
+    const collected = [];
+    for (const item of items) {
+      const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
+      if (entry) await traverseEntry(entry, collected);
+    }
+    setLoading(false);
+    if (!collected.length) { toast('Không tìm thấy file .docx', 'wrn'); return; }
+    addFiles(collected);
+    toast(`✅ Kéo thả: ${collected.length} file .docx`, 'ok');
+  } else {
+    addFiles(e.dataTransfer.files);
+  }
+});
+fileInput.addEventListener('change', e => { addFiles(e.target.files); fileInput.value = ''; });
+
+function traverseEntry(entry, out) {
+  return new Promise(resolve => {
+    if (entry.isFile) {
+      entry.file(f => { if (f.name.toLowerCase().endsWith('.docx')) out.push(f); resolve(); }, resolve);
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      reader.readEntries(async entries => { for (const e of entries) await traverseEntry(e, out); resolve(); }, resolve);
+    } else resolve();
+  });
+}
+
+function addFiles(list) {
+  let added = 0;
+  Array.from(list).forEach(f => {
+    if (f.name.split('.').pop().toLowerCase() !== 'docx') { toast(`"${f.name}" không hỗ trợ`, 'err'); return; }
+    if (files.find(x => x.name === f.name && x.size === f.size)) { toast(`"${f.name}" đã có`, 'wrn'); return; }
+    files.push(f); added++;
+  });
+  if (added) renderFileList();
+}
+
+function renderFileList() {
+  const frag = document.createDocumentFragment();
+  files.forEach((f, i) => {
+    const div = document.createElement('div');
+    div.className = 'chip';
+    div.innerHTML = `<span class="chip-ext">DOCX</span>
+      <span class="chip-name" title="${esc(f.name)}">${esc(f.name)}</span>
+      <span class="chip-size">${fmtSize(f.size)}</span>
+      <button class="chip-del" title="Xóa" data-idx="${i}">✕</button>`;
+    frag.appendChild(div);
+  });
+  fileList.innerHTML = ''; fileList.appendChild(frag);
+  fileList.onclick = e => {
+    const btn = e.target.closest('.chip-del');
+    if (!btn) return;
+    files.splice(parseInt(btn.dataset.idx, 10), 1);
+    renderFileList();
+  };
+  countLabel.textContent = files.length ? `${files.length} tệp đã tải` : '';
+}
+
+function clearAll() {
+  if ((files.length || driveItems.length) && !confirm('Xóa tất cả file đã chọn?')) return;
+  files = []; driveItems = []; synthesizedTree = [];
+  renderFileList();
+  document.getElementById('driveResult').style.display = 'none';
+  document.getElementById('driveFileChips').innerHTML = '';
+  resultCard.style.display = 'none';
+  tBody.innerHTML = '';
+  toast('Đã xóa tất cả', 'ok');
+}
+
+// ================================================================
+// MODULE: GOOGLE DRIVE — GỌI QUA APPS SCRIPT (HIGH ACCURACY)
+// ================================================================
+let _driveRootUrl = '';
+
+async function fetchFolderList() {
+  const url = document.getElementById('driveFolderUrl').value.trim();
+  _driveRootUrl = url;
+  const scriptUrl = (typeof APPS_SCRIPT_URL !== 'undefined') ? APPS_SCRIPT_URL.trim() : '';
+  if (!scriptUrl || scriptUrl.includes('xxxxxxxx')) {
+    document.getElementById('configError').style.display = 'block';
+    toast('Chưa cấu hình APPS_SCRIPT_URL trong config.js', 'err'); return;
+  }
+  setLoading(true, 'Đang tìm thư mục tháng...', url || '(thư mục mặc định)', 20);
+  let data;
+  try {
+    const apiUrl = scriptUrl + '?action=listFolders' + (url ? '&folderUrl=' + encodeURIComponent(url) : '');
+    const r = await fetch(apiUrl);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    data = await r.json();
+    if (!data.ok) throw new Error(data.error);
+  } catch(e) { setLoading(false); toast('❌ ' + e.message, 'err'); return; }
+  setLoading(false);
+
+  const folders = data.folders || [];
+  const panel = document.getElementById('folderPickerPanel');
+  const header = document.getElementById('folderPickerHeader');
+  const grid = document.getElementById('folderGrid');
+  if (!folders.length) { toast('Không tìm thấy thư mục con nào có file .docx', 'err'); return; }
+
+  const byYear = {};
+  folders.forEach(f => { const y = f.yearName || 'Khác'; if (!byYear[y]) byYear[y] = []; byYear[y].push(f); });
+  let totalFiles = folders.reduce((s, f) => s + f.fileCount, 0);
+  header.innerHTML = `📁 <b>${data.folderName}</b> — tìm thấy <b>${folders.length}</b> thư mục tháng, tổng <b>${totalFiles}</b> báo cáo. Chọn tháng để tổng hợp:`;
+
+  grid.innerHTML = '';
+  Object.keys(byYear).sort((a, b) => b.localeCompare(a)).forEach(year => {
+    byYear[year].forEach(folder => {
+      const card = document.createElement('div');
+      card.className = 'folder-card';
+      card.dataset.id = folder.id; card.dataset.name = folder.name;
+      card.innerHTML = `
+        <span class="folder-card-year">${esc(folder.yearName || '')}</span>
+        <span class="folder-card-name">📅 ${esc(folder.name)}</span>
+        <span class="folder-card-count">📄 ${folder.fileCount} báo cáo</span>
+        <span class="folder-card-badge">✓ Đã chọn</span>
+        <span class="folder-card-spin"></span>`;
+      card.addEventListener('click', () => selectFolder(folder, card));
+      grid.appendChild(card);
+    });
+  });
+  panel.style.display = 'block';
+  document.getElementById('driveResult').style.display = 'none';
+  driveItems = [];
+  toast(`✅ Tìm thấy ${folders.length} thư mục tháng`, 'ok');
+}
+
+async function selectFolder(folder, cardEl) {
+  const scriptUrl = (typeof APPS_SCRIPT_URL !== 'undefined') ? APPS_SCRIPT_URL.trim() : '';
+  document.querySelectorAll('.folder-card').forEach(c => c.classList.remove('selected', 'loading'));
+  cardEl.classList.add('loading');
+  driveItems = [];
+  document.getElementById('driveResult').style.display = 'none';
+
+  setLoading(true, `Đang lấy danh sách báo cáo tháng "${folder.name}"...`, '', 5);
+  let listData;
+  try {
+    const listUrl = scriptUrl + '?action=list&subFolderId=' + encodeURIComponent(folder.id);
+    const r = await fetch(listUrl);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    listData = await r.json();
+    if (!listData.ok) throw new Error(listData.error);
+  } catch(e) { setLoading(false); cardEl.classList.remove('loading'); toast('❌ ' + e.message, 'err'); return; }
+
+  // ▲ HIGH ACCURACY: CHẶN nếu Drive trả truncated=true
+  if (listData.truncated) {
+    setLoading(false);
+    cardEl.classList.remove('loading');
+    const totalOnDrive = listData.totalOnDrive ?? listData.total;
+    toast(`⛔ Drive có ${totalOnDrive} file nhưng chỉ trả ${listData.total}. Dữ liệu bị cắt — không tổng hợp để tránh mất dữ liệu.`, 'err');
+    showTruncatedWarning(folder.name, listData.total, totalOnDrive);
+    return;
+  }
+
+  const allFileInfos = listData.files || [];
+  const total = allFileInfos.length;
+  const batchSize = listData.batchSize || 3;
+  let errCount = 0;
+  let truncatedFiles = [];
+
+  for (let b = 0; b < allFileInfos.length; b += batchSize) {
+    const batch = allFileInfos.slice(b, b + batchSize);
+    const ids = batch.map(f => f.id).join(',');
+    const done = Math.min(b + batchSize, total);
+    const pct = Math.round(10 + (done / total) * 85);
+    setLoading(true, `Đang đọc HTML báo cáo (${done}/${total})...`, batch.map(f => f.name).join(', '), pct);
+    try {
+      const r = await fetch(scriptUrl + '?action=read&ids=' + encodeURIComponent(ids));
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      if (!data.ok) throw new Error(data.error);
+      (data.results || []).forEach(res => {
+        const info = batch.find(f => f.id === res.id);
+        if (res.ok && res.html && res.html.trim()) {
+          // Kiểm tra bị cắt giữa chừng
+          if (res.html.includes('<!-- TRUNCATED -->')) {
+            truncatedFiles.push(res.name);
+            _addDebugLog('warn', `Drive file bị cắt (truncated): ${res.name}`);
+          }
+          driveItems.push({
+            name: res.name,
+            path: info ? info.path : '',
+            html: res.html.replace('<!-- TRUNCATED -->', ''),
+            source: 'drive'
+          });
+        } else {
+          errCount++;
+          _addDebugLog('error', `Không đọc được Drive file: ${res.name} — ${res.error || 'unknown'}`);
+        }
+      });
+    } catch(e) {
+      errCount += batch.length;
+      _addDebugLog('error', `Batch Drive lỗi: ${e.message}`);
+      toast(`⚠️ Lỗi batch: ${e.message}`, 'wrn');
+    }
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  setLoading(false);
+  cardEl.classList.remove('loading'); cardEl.classList.add('selected');
+
+  // Cảnh báo file bị cắt
+  if (truncatedFiles.length) {
+    toast(`⚠️ ${truncatedFiles.length} file Drive bị cắt HTML. Có thể mất một phần dữ liệu.`, 'wrn');
+  }
+
+  document.getElementById('driveResult').style.display = 'block';
+  const info = document.getElementById('driveResultInfo');
+  const chips = document.getElementById('driveFileChips');
+  let infoHtml = `<span class="ok-badge">📅 Tháng: ${esc(folder.name)}</span>`;
+  infoHtml += ` <span style="color:var(--green);font-size:.75rem;font-weight:700;">✅ Đã đọc HTML: ${driveItems.length} báo cáo</span>`;
+  if (errCount) infoHtml += ` <span style="background:#fef2f2;color:var(--red);border:1px solid #fecaca;border-radius:20px;padding:.15rem .65rem;font-size:.74rem;font-weight:700;">⚠️ Lỗi: ${errCount} file</span>`;
+  info.innerHTML = infoHtml;
+  chips.innerHTML = '';
+  driveItems.slice(0, 20).forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'chip';
+    div.innerHTML = `<span class="chip-ext">HTML</span>
+      <span class="chip-name" title="${esc(f.name)}">${esc(f.name)}</span>
+      <span class="chip-size" style="font-size:.72rem;color:var(--muted);">${esc(f.path)}</span>`;
+    chips.appendChild(div);
+  });
+  if (driveItems.length > 20) {
+    const more = document.createElement('div');
+    more.style.cssText = 'padding:.35rem .8rem;font-size:.76rem;color:var(--muted);';
+    more.textContent = `… và ${driveItems.length - 20} báo cáo khác`;
+    chips.appendChild(more);
+  }
+  toast(`✅ Sẵn sàng tổng hợp ${driveItems.length} báo cáo — nhấn ⚡ Tổng hợp`, 'ok');
+}
+
+function showTruncatedWarning(folderName, gotCount, totalCount) {
+  const existingWarn = document.getElementById('truncatedWarning');
+  if (existingWarn) existingWarn.remove();
+  const warn = document.createElement('div');
+  warn.id = 'truncatedWarning';
+  warn.style.cssText = 'background:#fef2f2;border:2px solid #dc2626;border-radius:10px;padding:1rem 1.2rem;margin-top:.9rem;font-size:.85rem;color:#991b1b;';
+  warn.innerHTML = `⛔ <b>CẢNH BÁO: Dữ liệu bị thiếu!</b><br>
+    Thư mục "<b>${esc(folderName)}</b>" có <b>${totalCount} file</b> nhưng hệ thống chỉ lấy được <b>${gotCount} file</b>.<br>
+    Để tổng hợp đầy đủ, hãy tăng <code>MAX_FILES</code> trong <code>DriveReader.gs</code> lên <b>${totalCount + 50}</b> rồi deploy lại.`;
+  document.getElementById('driveResult').style.display = 'block';
+  document.getElementById('driveResultInfo').innerHTML = '';
+  document.getElementById('driveResult').prepend(warn);
+}
+
+// ================================================================
+// MODULE: PARSER — HTML → Section Tree
+// Chuẩn: DOCX/Drive → HTML → DOMParser → Section Tree
+// ================================================================
+
+// Đọc DOCX local — dùng mammoth giữ HTML thật
+function readDocxHtml(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onerror = rej;
+    r.onload = e => {
+      mammoth.convertToHtml({ arrayBuffer: e.target.result }, {
+        styleMap: [
+          "p[style-name='Heading 1'] => h1:fresh",
+          "p[style-name='Heading 2'] => h2:fresh",
+          "p[style-name='Heading 3'] => h3:fresh",
+          "p[style-name='heading 1'] => h1:fresh",
+          "p[style-name='heading 2'] => h2:fresh",
+          "p[style-name='heading 3'] => h3:fresh",
+          "p[style-name='tieu de 1'] => h1:fresh",
+          "p[style-name='tieu de 2'] => h2:fresh",
+          "r[style-name='Strong'] => strong",
+        ]
+      })
+        .then(d => res(d.value || ''))
+        .catch(() => rej(new Error('Không đọc được file: ' + file.name)));
+    };
+    r.readAsArrayBuffer(file);
+  });
+}
+
+// Parse HTML → danh sách line objects
+function htmlToLines(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  const lines = [];
+
+  function extractNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) return;
+    const tag = (node.tagName || '').toLowerCase();
+    const blockTags = ['p','li','h1','h2','h3','h4','h5','h6','td','th'];
+
+    if (blockTags.includes(tag)) {
+      const text = (node.textContent || '').trim();
+      if (!text) return;
+      // Tính tỉ lệ bold
+      const strongs = node.querySelectorAll('strong, b');
+      const boldText = Array.from(strongs).map(s => s.textContent).join('').trim();
+      const boldRatio = text.length > 0 ? (boldText.length / text.length) : 0;
+      const isBold = boldRatio > 0.5;
+      // Lưu tag gốc để ưu tiên heading
+      lines.push({ text, bold: isBold, tag, boldRatio });
+    } else {
+      for (const child of node.childNodes) extractNode(child);
+    }
+  }
+  for (const child of div.childNodes) extractNode(child);
+  return lines;
+}
+
+// ── SKIP PATTERNS — dòng không phải nội dung báo cáo ────────────
+const SKIP_PATTERNS = [
+  /cộng hòa xã hội chủ nghĩa/i,
+  /độc lập.{0,10}tự do.{0,10}hạnh phúc/i,
+  /không có gì quý hơn/i,
+  /kính gửi\s*:/i,
+  /nơi nhận\s*:/i,
+  /^tm\.\s*\w/i, /^kt\.\s*\w/i,
+  /^ký tên$/i, /^đóng dấu$/i,
+  /^\d{1,2}\s*\/\s*\d{1,2}\s*\/\s*\d{2,4}$/,  // chỉ ngày tháng
+  /^ngày\s+\d{1,2}\s+tháng\s+\d{1,2}/i,
+  /^(chủ tịch|phó chủ tịch|bí thư|phó bí thư|trưởng ban|phó ban|giám đốc)\s*$/i,
+  /^(họ và tên|chức vụ|đơn vị)\s*:/i,
+  /^số\s*:\s*\/?\s*\w+$/i,
+  /^v\/v\s+/i,  // công văn V/v
+];
+
+function shouldSkip(text) {
+  const t = text.trim();
+  if (t.length < 3) return true;
+  for (const p of SKIP_PATTERNS) if (p.test(t)) return true;
+  return false;
+}
+
+// ── DETECT LEVEL — ưu tiên exact code, sau đó pattern ──────────
+const ROMAN_LIST = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV'];
+const ROMAN_SET  = new Set(ROMAN_LIST);
+
+function detectSectionLevel(text, isBold, tag) {
+  const t = text.trim();
+  if (!t) return null;
+
+  // Level 1 ưu tiên: heading tags từ mammoth/Google Docs
+  if (tag === 'h1') {
+    return { level: 1, code: '_h1_', title: t, matchType: 'heading' };
+  }
+
+  // Level 2 ưu tiên: heading tags
+  if (tag === 'h2') {
+    return { level: 2, code: '_h2_', title: t, matchType: 'heading' };
+  }
+  if (tag === 'h3') {
+    return { level: 3, code: '_h3_', title: t, matchType: 'heading' };
+  }
+
+  // Level 1: Số La Mã — hỗ trợ I. II) III/ III (bold)
+  const romMatch = t.match(/^(I{1,3}|IV|VI{0,3}|IX|X{1,3}(?:IX|IV|V?I{0,3}))[\.:\)\s\/]\s*(.+)/i);
+  if (romMatch) {
+    const rom = romMatch[1].toUpperCase();
+    if (ROMAN_SET.has(rom)) {
+      const title = romMatch[2].trim();
+      return { level: 1, code: rom, title, matchType: 'roman' };
+    }
+  }
+  // Level 1 standalone roman (bold, no separator) — e.g. "I Công tác chuyên môn"
+  const romStandalone = t.match(/^(I{1,3}|IV|VI{0,3}|IX|X{1,3})\s+(.{5,})/i);
+  if (romStandalone && isBold) {
+    const rom = romStandalone[1].toUpperCase();
+    if (ROMAN_SET.has(rom)) {
+      return { level: 1, code: rom, title: romStandalone[2].trim(), matchType: 'roman-bold' };
+    }
+  }
+
+  // Level 2: Số thứ tự — hỗ trợ: 1. 1) 1/ 1 (bold)
+  const numMatch2 = t.match(/^(\d{1,2})[\.\/\)]\s+(.+)/);
+  if (numMatch2) {
+    return { level: 2, code: numMatch2[1], title: numMatch2[2].trim(), matchType: 'numeric' };
+  }
+  // Số thứ tự không dấu nhưng bold
+  const numStandalone = t.match(/^(\d{1,2})\s+(.{5,})/);
+  if (numStandalone && isBold) {
+    return { level: 2, code: numStandalone[1], title: numStandalone[2].trim(), matchType: 'numeric-bold' };
+  }
+
+  // Level 3 đặc biệt: chữ cái a. a) A. A)
+  const alphaMatch = t.match(/^([a-zA-Z])[\.\/\)]\s+(.+)/);
+  if (alphaMatch && alphaMatch[2].length > 3) {
+    const isUpper = alphaMatch[1] === alphaMatch[1].toUpperCase();
+    return { level: isUpper ? 2 : 3, code: alphaMatch[1].toLowerCase(), title: alphaMatch[2].trim(), matchType: 'alpha' };
+  }
+
+  // Bullet/dash = level 3 content — không phải section
+  const bulletMatch = t.match(/^([-–—•·\*✓➢➤►▶→]+)\s+(.+)/);
+  if (bulletMatch && bulletMatch[2].length > 2) {
+    return { level: 99, code: 'bullet', title: bulletMatch[2].trim(), matchType: 'bullet' };
+  }
+
+  return null;
+}
+
+// ── PARSE DOCUMENT: HTML → Section Tree objects ─────────────────
+// {id, level, code, title, content, children, source, fingerprint}
+function parseDocument(html, fileName, source) {
+  const rawLines = htmlToLines(html);
+  const sections = [];
+  let currentL1Code = null;
+  let currentL1Title = '';
+  let currentSection = null;
+  let docIdx = sections.length;
+
+  for (const { text, bold, tag, boldRatio } of rawLines) {
+    if (shouldSkip(text)) continue;
+    const det = detectSectionLevel(text, bold, tag);
+
+    if (!det) {
+      // Plain content → append to current section
+      if (currentSection) {
+        currentSection.content += (currentSection.content ? '\n' : '') + text.trim();
+      }
+      continue;
+    }
+
+    if (det.level === 99) {
+      // Bullet → content của section hiện tại
+      if (currentSection) {
+        currentSection.content += (currentSection.content ? '\n' : '') + '• ' + det.title;
+      }
+      continue;
+    }
+
+    if (det.level === 1) {
+      currentL1Code  = det.code;
+      currentL1Title = det.title;
+      currentSection = createSection(1, det.code, det.title, [det.title], fileName, source);
+      sections.push(currentSection);
+
+    } else if (det.level === 2) {
+      currentSection = createSection(2, det.code, det.title, [currentL1Title, det.title], fileName, source);
+      sections.push(currentSection);
+
+    } else if (det.level === 3) {
+      // Level 3: sub-section nếu bold hoặc alpha
+      const parentL2 = currentSection ? currentSection.title : '';
+      if (bold || det.matchType === 'alpha') {
+        currentSection = createSection(3, det.code, det.title, [currentL1Title, parentL2, det.title], fileName, source);
+        sections.push(currentSection);
+      } else {
+        // Treat as content bullet
+        if (currentSection) currentSection.content += (currentSection.content ? '\n' : '') + '• ' + det.title;
+      }
+    }
+  }
+
+  _addDebugLog('parse', `${fileName}: ${sections.length} sections từ ${rawLines.length} dòng`);
+  return sections;
+}
+
+function createSection(level, code, title, path, fileName, source) {
+  return {
+    id: genId(),
+    level,
+    code,       // exact section code (I, II, 1, 2, a...)
+    title,
+    path,       // breadcrumb path
+    content: '',
+    sources: [fileName],
+    source: source || 'local',
+    fingerprint: makeFingerprint(title),
+    originalContent: null
+  };
+}
+
+// ================================================================
+// MODULE: MERGER — HIGH ACCURACY
+// Ưu tiên: exact code > exact normalized title > fingerprint
+// KHÔNG merge nếu không chắc chắn
+// ================================================================
+
+// Chuẩn hóa tiêu đề — bỏ dấu, lowercase, trim
+function normalizeTitle(title) {
+  return (title || '').toLowerCase()
+    .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g,'a')
+    .replace(/[èéẹẻẽêềếệểễ]/g,'e')
+    .replace(/[ìíịỉĩ]/g,'i')
+    .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g,'o')
+    .replace(/[ùúụủũưừứựửữ]/g,'u')
+    .replace(/[ỳýỵỷỹ]/g,'y')
+    .replace(/đ/g,'d')
+    .replace(/[^a-z0-9\s]/g,'')
+    .replace(/\s+/g,' ').trim();
+}
+
+// Fingerprint: set of significant words (>=3 chars)
+function makeFingerprint(title) {
+  const words = normalizeTitle(title).split(' ').filter(w => w.length >= 3);
+  return new Set(words);
+}
+
+// Jaccard similarity giữa 2 fingerprint sets
+function fingerprintSimilarity(fpA, fpB) {
+  if (!fpA.size || !fpB.size) return 0;
+  const intersection = [...fpA].filter(w => fpB.has(w)).length;
+  const union = new Set([...fpA, ...fpB]).size;
+  return union ? intersection / union : 0;
+}
+
+// ── TÌM SECTION KHỚP — HIGH ACCURACY ────────────────────────────
+// Ngưỡng an toàn: chỉ merge khi RẤT CHẮC CHẮN
+function findMatchingSection(merged, sec) {
+  for (const m of merged) {
+    if (m.level !== sec.level) continue;
+
+    // Điều kiện 1: Exact section code + level khớp (ưu tiên cao nhất)
+    // Chỉ áp dụng khi code có ý nghĩa (roman hoặc số)
+    const codeMatchable = sec.code && !['_h1_','_h2_','_h3_','bullet'].includes(sec.code);
+    if (codeMatchable && m.code === sec.code) {
+      // Thêm kiểm tra title để tránh gộp nhầm "I Công tác A" vs "I Công tác B"
+      const normA = normalizeTitle(m.title);
+      const normB = normalizeTitle(sec.title);
+      if (normA === normB) {
+        _addDebugLog('merge', `[EXACT CODE+TITLE] "${sec.title}" → gộp vào "${m.title}"`);
+        return m;
+      }
+      // Code giống nhưng title khác nhiều → KHÔNG merge
+      const sim = fingerprintSimilarity(m.fingerprint, sec.fingerprint);
+      if (sim < 0.7) {
+        _addDebugLog('skip', `[CODE SAME, TITLE DIFF] "${sec.title}" vs "${m.title}" sim=${sim.toFixed(2)} — KHÔNG gộp`);
+        continue;
+      }
+    }
+
+    // Điều kiện 2: Exact normalized title
+    const normM = normalizeTitle(m.title);
+    const normS = normalizeTitle(sec.title);
+    if (normM === normS) {
+      _addDebugLog('merge', `[EXACT TITLE] "${sec.title}" → gộp vào "${m.title}"`);
+      return m;
+    }
+
+    // Điều kiện 3: Fingerprint cao (>= 0.85) — rất giống nhau
+    const fpSim = fingerprintSimilarity(m.fingerprint, sec.fingerprint);
+    if (fpSim >= 0.93) {
+      _addDebugLog('merge', `[FINGERPRINT ${(fpSim*100).toFixed(0)}%] "${sec.title}" → gộp vào "${m.title}"`);
+      return m;
+    }
+
+    // KHÔNG merge nếu < 0.85 — tạo section mới thay vì gộp sai
+  }
+  return null;
+}
+
+// ── MERGE TOÀN BỘ ────────────────────────────────────────────────
+function mergeAllSections(allFileData) {
+  const merged = [];
+  for (const fd of allFileData) {
+    for (const sec of fd.sections) {
+      const match = findMatchingSection(merged, sec);
+      if (match) {
+        if (sec.content) {
+          match.content += (match.content ? '\n' : '') + sec.content;
+        }
+        if (!match.sources.includes(sec.sources[0])) {
+          match.sources.push(sec.sources[0]);
+        }
+      } else {
+        merged.push({ ...sec, sources: [...sec.sources] });
+        _addDebugLog('new', `[NEW SECTION] "${sec.title}" (level ${sec.level})`);
+      }
+    }
+  }
+  return merged;
+}
+
+// ================================================================
+// MODULE: DUPLICATE REMOVER — dùng hash(line), xóa thật
+// ================================================================
+function simpleHash(str) {
+  let hash = 0;
+  const s = normalizeTitle(str);
+  for (let i = 0; i < s.length; i++) {
+    const ch = s.charCodeAt(i);
+    hash = ((hash << 5) - hash) + ch;
+    hash |= 0;
+  }
+  return hash;
+}
+
+function deduplicateContent(content, sectionTitle) {
+  if (!content) return { clean: '', dupeCount: 0, dupeLog: [] };
+  const lines = content.split('\n');
+  const seen  = new Map();   // hash → line text
+  const out   = [];
+  let dupeCount = 0;
+  const dupeLog = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const h = simpleHash(trimmed);
+    if (!seen.has(h)) {
+      seen.set(h, trimmed);
+      out.push(trimmed);
+    } else {
+      // Đánh dấu dòng trùng bằng prefix đặc biệt (sẽ render mờ với nút X)
+      dupeCount++;
+     dupeLog.push(trimmed);
+
+     out.push('\x00DUPE\x00' + trimmed);
+      _addDebugLog('dupe', `[DUPE] Section "${sectionTitle}": "${trimmed.slice(0,60)}..."`);
+    }
+  }
+  return { clean: out.join('\n'), dupeCount, dupeLog };
+}
+
+// ================================================================
+// MODULE: VALIDATOR — kiểm tra sau khi tổng hợp
+// ================================================================
+function validateResults(merged, totalFiles, skippedFiles) {
+  const issues = [];
+  const successFiles = totalFiles - skippedFiles;
+
+  // Kiểm tra tỉ lệ thành công
+  if (successFiles === 0) {
+    issues.push({ type: 'critical', msg: 'Không có file nào đọc được!' });
+  } else if (successFiles < totalFiles * 0.5) {
+    issues.push({ type: 'warn', msg: `Chỉ đọc được ${successFiles}/${totalFiles} file (< 50%)` });
+  }
+
+  // Kiểm tra thiếu section I/II/III
+  const l1Codes = merged.filter(s => s.level === 1).map(s => s.code);
+  if (l1Codes.length === 0) {
+    issues.push({ type: 'warn', msg: 'Không tìm thấy mục cấp I (La Mã). Có thể báo cáo không có cấu trúc phân cấp rõ.' });
+  }
+
+  // Kiểm tra section rỗng bất thường
+  const emptySections = merged.filter(s => !s.content || s.content.trim().length < 5);
+  if (emptySections.length > merged.length * 0.4) {
+    issues.push({ type: 'warn', msg: `${emptySections.length}/${merged.length} mục không có nội dung — cấu trúc có thể chưa nhận dạng đúng` });
+  }
+
+  // Kiểm tra số mục quá ít
+  if (merged.length < 3 && totalFiles > 5) {
+    issues.push({ type: 'warn', msg: `Chỉ tổng hợp được ${merged.length} mục từ ${totalFiles} file — có thể cấu trúc báo cáo không chuẩn` });
+  }
+
+  return issues;
+}
+
+function showValidationIssues(issues) {
+  if (!issues.length) return;
+  const container = document.getElementById('rpMergeSuggestions') || document.getElementById('mergeSuggestions');
+  const existingValidation = document.getElementById('validationIssues');
+  if (existingValidation) existingValidation.remove();
+
+  const div = document.createElement('div');
+  div.id = 'validationIssues';
+  div.style.cssText = 'margin:.4rem .5rem;';
+  div.innerHTML = issues.map(issue => {
+    const color = issue.type === 'critical' ? '#dc2626' : '#d97706';
+    const bg    = issue.type === 'critical' ? '#fef2f2' : '#fffbeb';
+    const icon  = issue.type === 'critical' ? '⛔' : '⚠️';
+    return `<div style="background:${bg};border:1px solid ${color};border-radius:6px;padding:.5rem .8rem;margin-bottom:.35rem;font-size:.79rem;color:#1e293b;">${icon} ${esc(issue.msg)}</div>`;
+  }).join('');
+  container.prepend(div);
+}
+
+// ================================================================
+// MODULE: MAIN PROCESSOR — song song, chunk, no-block UI
+// ================================================================
+const PARSE_BATCH_SIZE = 8;
+
+async function processFiles() {
+  const totalLocal = files.length;
+  const totalDrive = driveItems.length;
+  const total = totalLocal + totalDrive;
+  if (total === 0) { toast('Vui lòng tải lên hoặc chọn ít nhất 1 tệp .docx', 'err'); return; }
+
+  debugLog = [];   // reset log
+  setLoading(true, 'Đang đọc file...', '', 0);
+
+  const allFileData = [];
+  let skipped = 0; let done = 0; let dupesTotal = 0;
+
+  try {
+    // ── LOCAL files: parse song song theo batch ─────────────────
+    for (let b = 0; b < totalLocal; b += PARSE_BATCH_SIZE) {
+      const batch = files.slice(b, b + PARSE_BATCH_SIZE);
+
+      // Promise.all để parse song song
+      const htmlResults = await Promise.allSettled(batch.map(f => readDocxHtml(f)));
+
+      for (let j = 0; j < batch.length; j++) {
+        done++;
+        const f   = batch[j];
+        const res = htmlResults[j];
+        setLoading(true, `Đang xử lý (${done}/${total})`, f.name, Math.round((done/total)*90));
+
+        if (res.status === 'rejected') {
+          toast(`⚠️ Lỗi "${f.name}"`, 'wrn');
+          _addDebugLog('error', `Parse lỗi local: ${f.name} — ${res.reason?.message || 'unknown'}`);
+          skipped++;
+          continue;
+        }
+        const html = res.value;
+        if (!html.trim()) { skipped++; continue; }
+
+        const sections = parseDocument(html, f.name, 'local');
+        if (!sections.length) {
+          _addDebugLog('warn', `Không có section nào: ${f.name}`);
+        }
+        allFileData.push({ fileName: f.name, sections });
+      }
+      await new Promise(r => setTimeout(r, 0));  // không block UI
+    }
+
+    // ── DRIVE files: đã có HTML, parse trực tiếp ────────────────
+    for (let b = 0; b < driveItems.length; b += PARSE_BATCH_SIZE) {
+      const batch = driveItems.slice(b, b + PARSE_BATCH_SIZE);
+      for (const df of batch) {
+        done++;
+        setLoading(true, `Đang xử lý Drive (${done}/${total})`, df.name, Math.round((done/total)*90));
+        if (!df.html || !df.html.trim()) { skipped++; continue; }
+        const sections = parseDocument(df.html, df.name, 'drive');
+        if (!sections.length) {
+          _addDebugLog('warn', `Drive file không có section nào: ${df.name}`);
+        }
+        allFileData.push({ fileName: df.name, sections });
+      }
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    if (!allFileData.length) {
+      toast('Không tìm thấy nội dung phù hợp từ các file', 'err');
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true, 'Đang gộp section (HIGH ACCURACY)...', '', 92);
+    await new Promise(r => setTimeout(r, 0));
+
+    // ── MERGE ───────────────────────────────────────────────────
+    let merged = mergeAllSections(allFileData);
+
+    setLoading(true, 'Đang loại trùng...', '', 95);
+    await new Promise(r => setTimeout(r, 0));
+
+    // ── DEDUP — xóa thật bằng hash ──────────────────────────────
+    merged = merged.map(sec => {
+      const result = deduplicateContent(sec.content, sec.title);
+      sec.originalContent = sec.content;
+      sec.content = result.clean;
+      dupesTotal += result.dupeCount;
+      return sec;
+    });
+
+    synthesizedTree = merged;
+
+    // ── VALIDATION ──────────────────────────────────────────────
+    const issues = validateResults(merged, total, skipped);
+
+    // ── CẬP NHẬT STATS ──────────────────────────────────────────
+    const statsBar = document.getElementById('statsBar');
+    if (statsBar) statsBar.style.display = 'flex';
+    const _files = total - skipped;
+    const _secs  = merged.length;
+    const _lines = merged.reduce((a, s) => a + countLines(s.content), 0);
+
+    ['statFiles','rpStatFiles'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=_files; });
+    ['statSections','rpStatSections'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=_secs; });
+    ['statLines','rpStatLines'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=_lines; });
+    ['statDupes','rpStatDupes'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=dupesTotal; });
+    statText.textContent = `${_secs} mục tổng hợp`;
+    srcLabel.textContent = `(${_files} tệp nguồn)`;
+    const rpSt = document.getElementById('rpStatText'); if(rpSt) rpSt.textContent = `${_secs} mục tổng hợp`;
+    const rpSrc = document.getElementById('rpSrcLabel'); if(rpSrc) rpSrc.textContent = `(${_files} tệp nguồn)`;
+
+    renderResults(merged);
+    detectMergeSuggestions(merged);
+    if (issues.length) showValidationIssues(issues);
+    openResultPage();
+
+    const skipNote = skipped ? ` (bỏ qua ${skipped} file lỗi)` : '';
+    toast(`✅ Hoàn thành — ${merged.length} mục từ ${_files} tệp${skipNote}`, 'ok');
+    if (dupesTotal) toast(`🔁 Đã xóa ${dupesTotal} dòng trùng`, 'wrn');
+
+    _addDebugLog('summary', `=== KẾT QUẢ: ${_files} file | ${_secs} mục | ${_lines} dòng | ${dupesTotal} dupe`);
+
+  } catch (err) {
+    console.error(err);
+    _addDebugLog('error', `FATAL: ${err.message}`);
+    toast('❌ Lỗi: ' + err.message, 'err');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ================================================================
+// MODULE: DEBUG LOG
+// ================================================================
+function _addDebugLog(type, msg) {
+  debugLog.push({ type, msg, ts: Date.now() });
+}
+
+function showDebugLog() {
+  const lines = debugLog.map(e => `[${e.type.toUpperCase()}] ${e.msg}`).join('\n');
+  const w = window.open('', '_blank', 'width=800,height=600');
+  if (w) {
+    w.document.write(`<html><head><title>Debug Log</title>
+      <style>body{font-family:monospace;font-size:12px;background:#0f172a;color:#e2e8f0;padding:16px;white-space:pre-wrap;line-height:1.6;}
+      .PARSE{color:#7dd3fc;}.MERGE{color:#86efac;}.NEW{color:#fbbf24;}.DUPE{color:#f87171;}
+      .WARN{color:#fdba74;}.ERROR{color:#f87171;font-weight:700;}.SKIP{color:#94a3b8;}.SUMMARY{color:#c4b5fd;font-weight:700;}
+      </style></head><body>`);
+    debugLog.forEach(e => {
+      w.document.write(`<div class="${e.type.toUpperCase()}">[${e.type.toUpperCase()}] ${escHtmlStr(e.msg)}</div>`);
+    });
+    w.document.write(`</body></html>`);
+  } else {
+    // Fallback: console
+    debugLog.forEach(e => console.log(`[${e.type}]`, e.msg));
+    toast('Mở cửa sổ mới bị chặn. Xem log tại Console (F12)', 'wrn');
+  }
+}
+
+// ================================================================
+// MODULE: RENDERER
+// ================================================================
+function renderResults(tree) {
+  const target = document.getElementById('rpBody') || tBody;
+  if (!tree.length) {
+    target.innerHTML = '<div class="empty-state"><span class="es-icon">📭</span><p>Không tìm thấy nội dung cấu trúc từ các file</p></div>';
+    return;
+  }
+  // Render theo chunk để không block UI với tree lớn
+  const RENDER_CHUNK = 30;
+  let html = '';
+  for (let i = 0; i < Math.min(RENDER_CHUNK, tree.length); i++) {
+    html += buildSectionCard(tree[i], i);
+  }
+  target.innerHTML = html;
+
+  if (tree.length > RENDER_CHUNK) {
+    // Render phần còn lại async
+    renderChunk(tree, RENDER_CHUNK, target);
+  }
+}
+
+async function renderChunk(tree, startIdx, target) {
+  const CHUNK = 30;
+  for (let i = startIdx; i < tree.length; i += CHUNK) {
+    const end  = Math.min(i + CHUNK, tree.length);
+    let html = '';
+    for (let j = i; j < end; j++) html += buildSectionCard(tree[j], j);
+    target.insertAdjacentHTML('beforeend', html);
+    await new Promise(r => setTimeout(r, 0));
+  }
+}
+
+function buildSectionCard(sec, idx) {
+  const levelClass = `level-${sec.level}`;
+  const levelLabel = sec.level === 1 ? 'I' : sec.level === 2 ? '1.' : '–';
+  const srcCount   = sec.sources ? sec.sources.length : 0;
+  const srcLabel_  = srcCount > 1 ? `${srcCount} nguồn` : (sec.sources?.[0] || '');
+
+  // Nguồn file: Drive vs Local
+  const sourceIcon = sec.source === 'drive' ? '☁️' : '💻';
+
+  const lines = (sec.content || '').split('\n').filter(l => l.trim());
+  const hasDupes = lines.some(l => l.startsWith('\x00DUPE\x00'));
+  const previewHtml = lines.map((l, li) => {
+    if (l.startsWith('\x00DUPE\x00')) {
+      const text = l.slice(6);
+      return `<span class="dupe-preview-row" data-idx="${idx}" data-li="${li}"><span class="dupe-preview-text">${esc(text)}</span><button class="dupe-restore-btn" onclick="event.stopPropagation();restoreDupeLine(${idx},${li})" title="Khôi phục dòng này vào tài liệu">🔄</button></span>`;
+    }
+    return `<span style="display:block">${esc(l)}</span>`;
+  }).join('');
+
+  return `<div class="sec-card ${levelClass}" id="sec-${idx}">
+  <div class="sec-header" onclick="toggleSection(${idx})">
+    <span class="sec-level-badge">${levelLabel}</span>
+    <input class="sec-title-input" value="${esc(sec.title)}" onclick="event.stopPropagation()"
+      onchange="updateSectionTitle(${idx}, this.value)">
+    <div class="sec-meta">
+      <span class="source-badge" onclick="event.stopPropagation();showSources(${idx})">${sourceIcon} ${esc(srcLabel_)}</span>
+      <span class="chevron">▾</span>
+      <button class="del-sec-btn" onclick="event.stopPropagation();removeSection(${idx})" title="Xóa mục">✕</button>
+    </div>
+  </div>
+  <div class="sec-body">
+    <div class="content-preview" id="prev-${idx}"
+      data-placeholder="(Chưa có nội dung)">${previewHtml}</div>
+    <textarea id="ta-${idx}" style="display:none">${esc(sec.content || '')}</textarea>
+    <div class="sec-body-actions" style="margin-top:.5rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-outline" style="font-size:.75rem;padding:.3rem .8rem;" onclick="toggleEdit(${idx})">✏️ Chỉnh sửa</button>
+      ${hasDupes ? `<button class="btn btn-remove-dupes" id="rmd-${idx}" onclick="removeAllDupes(${idx})">🗑 Xóa tất cả dòng trùng</button>` : ''}
+    </div>
+  </div>
+</div>`;
+}
+
+function toggleSection(idx) { document.getElementById(`sec-${idx}`)?.classList.toggle('collapsed'); }
+
+// Khôi phục dòng trùng thành dòng thường (nhấn ↩)
+function restoreDupeLine(idx, lineIdx) {
+  const sec = synthesizedTree[idx];
+  if (!sec) return;
+  const lines = sec.content.split('\n').filter(l => l.trim());
+  if (lineIdx >= 0 && lineIdx < lines.length && lines[lineIdx].startsWith('\x00DUPE\x00')) {
+    lines[lineIdx] = lines[lineIdx].slice(6); // strip prefix → thành dòng thường
+    sec.content = lines.join('\n');
+  }
+  const card = document.getElementById(`sec-${idx}`);
+  if (!card) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = buildSectionCard(sec, idx);
+  card.replaceWith(tmp.firstElementChild || tmp.children[0]);
+}
+
+// Xóa tất cả dòng trùng trong một section
+function removeAllDupes(idx) {
+  const sec = synthesizedTree[idx];
+  if (!sec) return;
+  const lines = sec.content.split('\n').filter(l => l.trim());
+  const cleaned = lines.filter(l => !l.startsWith('\x00DUPE\x00'));
+  const removed = lines.length - cleaned.length;
+  sec.content = cleaned.join('\n');
+  const card = document.getElementById(`sec-${idx}`);
+  if (!card) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = buildSectionCard(sec, idx);
+  card.replaceWith(tmp.firstElementChild || tmp.children[0]);
+  if (removed) toast(`🗑 Đã xóa ${removed} dòng trùng`, 'ok');
+}
+
+function toggleEdit(idx) {
+  const prev = document.getElementById(`prev-${idx}`);
+  const ta   = document.getElementById(`ta-${idx}`);
+  if (!prev || !ta) return;
+  const editing = ta.style.display !== 'none';
+  if (editing) {
+    synthesizedTree[idx].content = ta.value;
+    const card = document.getElementById(`sec-${idx}`);
+    const tmp = document.createElement('div');
+    tmp.innerHTML = buildSectionCard(synthesizedTree[idx], idx);
+    card.replaceWith(tmp.firstElementChild || tmp.children[0] || tmp);
+    toast('Đã lưu', 'ok');
+  } else {
+    // Hiển thị nội dung trong textarea, strip dấu dòng trùng để chỉnh sửa bình thường
+    const cleanForEdit = (synthesizedTree[idx].content || '').split('\n')
+      .map(l => l.startsWith('\x00DUPE\x00') ? l.slice(6) : l).join('\n');
+    ta.value = cleanForEdit;
+    prev.style.display = 'none';
+    ta.style.display = 'block';
+    ta.rows = Math.min(16, Math.max(4, countLines(ta.value) + 2));
+    ta.focus();
+  }
+}
+
+function expandAll() {
+  const scope = document.getElementById('rpBody') || document;
+  scope.querySelectorAll('.sec-card').forEach(c => c.classList.remove('collapsed'));
+}
+function collapseAll() {
+  const scope = document.getElementById('rpBody') || document;
+  scope.querySelectorAll('.sec-card').forEach(c => c.classList.add('collapsed'));
+}
+
+function updateSectionTitle(idx, val) { if (synthesizedTree[idx]) synthesizedTree[idx].title = val; }
+
+function removeSection(idx) {
+  if (!confirm('Xóa mục này?')) return;
+  synthesizedTree.splice(idx, 1);
+  renderResults(synthesizedTree);
+  toast('Đã xóa mục', 'wrn');
+}
+
+// ================================================================
+// MODULE: RESULT PAGE
+// ================================================================
+function openResultPage() {
+  const rp = document.getElementById('resultPage');
+  rp.style.display = 'flex';
+  rp.classList.add('active');
+  const body = document.getElementById('rpBody');
+  if (body) body.scrollTop = 0;
+}
+function closeResultPage() {
+  const rp = document.getElementById('resultPage');
+  rp.classList.remove('active');
+  rp.style.display = 'none';
+  const rc = document.getElementById('resultCard');
+  if (rc) { rc.style.display = 'block'; rc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+}
+
+// ================================================================
+// MODULE: MERGE SUGGESTIONS
+// ================================================================
+function detectMergeSuggestions(tree) {
+  const container = document.getElementById('rpMergeSuggestions') || document.getElementById('mergeSuggestions');
+  if (!container) return;
+  container.innerHTML = '';
+  const SIMILAR_KEYWORDS = [
+    ['chuyển đổi số', 'ứng dụng cntt', 'công nghệ thông tin'],
+    ['kiến nghị', 'đề xuất', 'kiến nghị và đề xuất'],
+    ['phong trào', 'hoạt động hội', 'công tác hội'],
+  ];
+  const suggestions = [];
+  for (const group of SIMILAR_KEYWORDS) {
+    const matched = tree.filter(s => group.some(kw => normalizeTitle(s.title).includes(normalizeTitle(kw))));
+    if (matched.length >= 2) {
+      const names = [...new Set(matched.map(m => m.title))];
+      if (names.length >= 2) suggestions.push(names);
+    }
+  }
+  if (!suggestions.length) return;
+  container.innerHTML = suggestions.map(names =>
+    `<div class="merge-suggestion">💡 <b>Gợi ý gộp:</b> ${names.map(n => `<span class="badge-blue">${esc(n)}</span>`).join(' + ')} có nội dung tương tự.</div>`
+  ).join('');
+}
+
+// ================================================================
+// MODULE: SOURCE MODAL
+// ================================================================
+function showSources(idx) {
+  const sec = synthesizedTree[idx];
+  if (!sec) return;
+  const body = document.getElementById('sourceModalBody');
+  const srcCount = sec.sources?.length || 0;
+  body.innerHTML = `<p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem;">
+    Mục "<b>${esc(sec.title)}</b>" từ <b>${srcCount}</b> nguồn:</p>
+    ${(sec.sources || []).map(s => {
+      const isDrive = sec.source === 'drive';
+      return `<div class="source-item"><div class="source-item-name">${isDrive?'☁️':'💻'} ${esc(s)}</div></div>`;
+    }).join('')}`;
+  document.getElementById('sourceModal').classList.add('active');
+}
+function closeSourceModal() { document.getElementById('sourceModal').classList.remove('active'); }
+document.getElementById('sourceModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('sourceModal')) closeSourceModal();
+});
+
+// ================================================================
+// MODULE: XUẤT WORD
+// ================================================================
+async function exportWord() {
+  synthesizedTree.forEach((sec, idx) => {
+    const ta = document.getElementById(`ta-${idx}`);
+    if (ta && ta.style.display !== 'none') sec.content = ta.value;
+  });
+
+  if (!synthesizedTree.length) { toast('Chưa có nội dung để xuất', 'wrn'); return; }
+  setLoading(true, 'Đang xuất file Word...', '', 50);
+
+  const today = new Date();
+  const yyyymmdd = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  const dateStr  = `${String(today.getDate()).padStart(2,'0')}/${String(today.getMonth()+1).padStart(2,'0')}/${today.getFullYear()}`;
+
+  const lib = (typeof docx !== 'undefined') ? docx : null;
+  if (lib && lib.Document && lib.Packer) {
+    try {
+      const { Document, Paragraph, TextRun, AlignmentType, Packer } = lib;
+      const children = [];
+      children.push(new Paragraph({
+        children: [new TextRun({ text: 'BẢNG TỔNG HỢP BÁO CÁO', bold: true, size: 32, font: 'Times New Roman', allCaps: true })],
+        alignment: AlignmentType.CENTER, spacing: { after: 160, before: 320 }
+      }));
+      for (const sec of synthesizedTree) {
+        const indent   = { 1: 0, 2: 360, 3: 720 }[sec.level] ?? 360;
+        const fontSize = sec.level === 1 ? 28 : sec.level === 2 ? 26 : 24;
+        children.push(new Paragraph({
+          children: [new TextRun({ text: sec.title, bold: sec.level <= 2, size: fontSize, font: 'Times New Roman' })],
+          spacing: { before: sec.level <= 1 ? 280 : 160, after: 80 }, indent: { left: indent }
+        }));
+        if (sec.content) {
+          for (const line of sec.content.split('\n').filter(l => l.trim())) {
+            if (line.startsWith('\x00DUPE\x00')) continue; // bỏ qua dòng trùng chưa khôi phục
+            const isBullet = /^[•\-]/.test(line.trim());
+            children.push(new Paragraph({
+              children: [new TextRun({ text: line.trim(), size: 24, font: 'Times New Roman' })],
+              alignment: AlignmentType.JUSTIFIED,
+              indent: { left: isBullet ? indent + 360 : indent + 200 },
+              spacing: { after: 70 }
+            }));
+          }
+        }
+      }
+      const doc = new Document({ sections: [{ properties: { page: { margin: { top: 1440, bottom: 1440, left: 1800, right: 1080 } } }, children }] });
+      const blob = await Packer.toBlob(doc);
+      triggerDownload(blob, `TH-BC_${yyyymmdd}.docx`);
+      toast('✅ Đã xuất file Word thành công!', 'ok');
+      setLoading(false); return;
+    } catch(e) { console.warn('docx lib error, dùng RTF fallback:', e); }
+  }
+
+  // RTF fallback
+  try {
+    const rtf = buildRTF(synthesizedTree, dateStr);
+    const blob = new Blob([rtf], { type: 'application/rtf' });
+    triggerDownload(blob, `TH-BC_${yyyymmdd}.rtf`);
+    toast('✅ Đã xuất file RTF!', 'ok');
+  } catch(err2) { toast('❌ Lỗi xuất file: ' + err2.message, 'err'); }
+  setLoading(false);
+}
+
+function buildRTF(tree, dateStr) {
+  const enc = s => {
+    let out = '';
+    for (const ch of (s || '')) {
+      const code = ch.charCodeAt(0);
+      if (code < 128) {
+        if (ch === '\\') out += '\\\\'; else if (ch === '{') out += '\\{'; else if (ch === '}') out += '\\}'; else out += ch;
+      } else out += `\\u${code}?`;
+    }
+    return out;
+  };
+  let body = `{\\pard\\qc\\b\\fs32 ${enc('BẢNG TỔNG HỢP BÁO CÁO')}\\b0\\par}\n`;
+  body += `{\\pard\\qc\\i\\fs22 ${enc('Ngày: ' + dateStr)}\\i0\\par}\n{\\pard\\par}\n`;
+  for (const sec of tree) {
+    const indent = sec.level === 1 ? 0 : sec.level === 2 ? 360 : 720;
+    const fs = sec.level === 1 ? 28 : sec.level === 2 ? 26 : 24;
+    const bold = sec.level <= 2 ? '\\b ' : '';
+    body += `{\\pard\\li${indent}\\sb200\\sa80 ${bold}\\fs${fs} ${enc(sec.title)}\\b0\\par}\n`;
+    if (sec.content) {
+      for (const line of sec.content.split('\n').filter(l => l.trim())) {
+        if (line.startsWith('\x00DUPE\x00')) continue; // bỏ qua dòng trùng chưa khôi phục
+        const li = /^[•\-]/.test(line.trim()) ? indent + 360 : indent + 200;
+        body += `{\\pard\\li${li}\\sa60\\fs24 ${enc(line.trim())}\\par}\n`;
+      }
+    }
+  }
+  return `{\\rtf1\\ansi\\deff0\n{\\fonttbl{\\f0 Times New Roman;}}\n{\\f0\n${body}}}\n`;
+}
+
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// ================================================================
+// UTILITIES
+// ================================================================
+function genId() {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function escHtmlStr(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fmtSize(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+
+function countLines(content) {
+  if (!content) return 0;
+  return content.split('\n').filter(l => l.trim()).length;
+}
+
+function setLoading(on, msg = '', sub = '', pct = null) {
+  overlay.style.display = on ? 'flex' : 'none';
+  if (msg) overlayMsg.textContent = msg;
+  overlayPrg.textContent = sub;
+  if (pct !== null) { progressFill.style.width = pct + '%'; progressPct.textContent = pct + '%'; }
+}
+
+function toast(msg, type = 'info') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icon = { ok: '✅', err: '⚠️', wrn: '⚡' }[type] || 'ℹ️';
+  t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3800);
+}
+
+// ================================================================
+// KHỞI ĐỘNG
+// ================================================================
+const loginOverlay = document.getElementById('loginOverlay');
+const loginBtn     = document.getElementById('loginBtn');
+loginBtn.addEventListener('click', () => { loginOverlay.style.display = 'none'; });
+
+window.addEventListener('load', () => {
+  loginBtn.focus();
+  if (!window.showDirectoryPicker) {
+    const note = document.getElementById('folderApiNote');
+    if (note) note.style.display = 'block';
+  }
+  if (typeof APPS_SCRIPT_URL === 'undefined' || APPS_SCRIPT_URL.includes('xxxxxxxx')) {
+    document.getElementById('configError').style.display = 'block';
+  }
+  if (typeof DEFAULT_DRIVE_FOLDER !== 'undefined' && DEFAULT_DRIVE_FOLDER) {
+    const input = document.getElementById('driveFolderUrl');
+    if (input && !input.value.trim()) input.value = DEFAULT_DRIVE_FOLDER;
+  }
+
+  // Thêm nút Debug vào result page bar
+  const rpActions = document.getElementById('resultPageActions');
+  if (rpActions) {
+    const debugBtn = document.createElement('button');
+    debugBtn.className = 'rp-btn';
+    debugBtn.textContent = '🔍 Debug Log';
+    debugBtn.onclick = showDebugLog;
+    rpActions.prepend(debugBtn);
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && loginOverlay.style.display !== 'none') loginBtn.click();
+});
+</script>
+</body>
+</html>
